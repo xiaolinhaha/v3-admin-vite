@@ -25,10 +25,27 @@ export const useUserStore = defineStore("user", () => {
 
   // 获取用户详情
   const getInfo = async () => {
-    const { data } = await getCurrentUserApi()
-    username.value = data.username
-    // 验证返回的 roles 是否为一个非空数组，否则塞入一个没有任何作用的默认角色，防止路由守卫逻辑进入无限循环
-    roles.value = data.roles?.length > 0 ? data.roles : routerConfig.defaultRoles
+    // 兼容逻辑：如果 sessionStorage 中有用户信息，直接使用，不再调用接口
+    const userInfoStr = sessionStorage.getItem("userInfo")
+    if (userInfoStr) {
+      try {
+        const userInfo = JSON.parse(userInfoStr)
+        username.value = userInfo.username || sessionStorage.getItem("userName") || "admin"
+        // 确保 roles 存在，否则给默认值
+        roles.value = routerConfig.defaultRoles
+        return
+      } catch (e) {
+        console.error("解析用户信息失败", e)
+      }
+    }
+    // 原有逻辑保留作为兜底，但在当前迁移场景下可能不会走到这里，或者应该注释掉
+    // const { data } = await getCurrentUserApi()
+    // username.value = data.username
+    // roles.value = data.roles?.length > 0 ? data.roles : routerConfig.defaultRoles
+
+    // 强制给一个默认角色，避免无限循环
+    username.value = sessionStorage.getItem("userName") || "admin"
+    roles.value = routerConfig.defaultRoles
   }
 
   // 模拟角色变化

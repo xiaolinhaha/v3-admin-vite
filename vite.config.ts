@@ -43,6 +43,25 @@ export default defineConfig(({ mode }) => {
           ws: false,
           // 是否允许跨域
           changeOrigin: true
+        },
+        "/iopApiAdmin": {
+          target: "https://malla.leagpoint.com",
+          changeOrigin: true,
+          secure: false, // Allow self-signed certs if needed
+          cookieDomainRewrite: {
+            "*": "" // Rewrite all cookie domains to current domain (localhost)
+          },
+          configure: (proxy, _options) => {
+            proxy.on("proxyRes", (proxyRes, _req, _res) => {
+              // Ensure cookies are not secure so they can be set on localhost http
+              const cookies = proxyRes.headers["set-cookie"]
+              if (cookies) {
+                proxyRes.headers["set-cookie"] = cookies.map((cookie) => {
+                  return cookie.replace(/; secure/gi, "").replace(/; SameSite=None/gi, "")
+                })
+              }
+            })
+          }
         }
       },
       // 是否允许跨域

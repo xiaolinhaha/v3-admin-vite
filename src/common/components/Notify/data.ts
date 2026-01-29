@@ -3,7 +3,7 @@ import type { NotifyItem } from "./type"
 export const notifyData: NotifyItem[] = [
   {
     avatar: "https://gw.alipayobjects.com/zos/rmsportal/OKJXDXrmkNshAMvwtvhu.png",
-    title: "V3 Admin Vite 上线啦",
+    title: "IOP 上线啦",
     datetime: "两年前",
     description: "一个免费开源的中后台管理系统基础解决方案，基于 Vue3、TypeScript、Element Plus、Pinia 和 Vite 等主流技术"
   },

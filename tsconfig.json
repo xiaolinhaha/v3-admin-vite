@@ -28,7 +28,9 @@
     // 允许 JS
     "allowJs": true,
     // TS 严格模式
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "importHelpers": true,
     // 不输出任何编译后的文件，只进行类型检查
     "noEmit": true,

@@ -47,6 +47,15 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
+    path: "/intelligent-customer-inner",
+    component: () => import("@/pages/intelligent-customer-inner/index.vue"),
+    name: "IntelligentCustomerInner",
+    meta: {
+      title: "智能客服",
+      elIcon: "Service"
+    }
+  },
+  {
     path: "/",
     component: Layouts,
     redirect: "/dashboard",

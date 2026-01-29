@@ -30,7 +30,11 @@ function createInstance() {
       const responseType = response.config.responseType
       if (responseType === "blob" || responseType === "arraybuffer") return apiData
       // 这个 code 是和后端约定的业务 code
-      const code = apiData.code
+      const code = apiData.code || apiData.status
+      // 兼容旧接口结构 (iopApiAdmin)
+      if (apiData.success !== undefined || apiData.status !== undefined) {
+        return apiData
+      }
       // 如果没有 code, 代表这不是项目后端开发的 api
       if (code === undefined) {
         ElMessage.error("非本系统的接口")
@@ -111,8 +115,6 @@ function createRequest(instance: AxiosInstance) {
         "Authorization": token ? `Bearer ${token}` : undefined,
         "Content-Type": "application/json"
       },
-      // 请求体
-      data: {},
       // 请求超时
       timeout: 5000,
       // 跨域请求时是否携带 Cookies

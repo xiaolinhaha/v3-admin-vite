@@ -1,26 +1,24 @@
 <script lang="ts" setup>
-import type { FormRules } from "element-plus"
-import type { LoginRequestData } from "./apis/type"
+import { ElMessage, ElNotification } from "element-plus"
 import ThemeSwitch from "@@/components/ThemeSwitch/index.vue"
-import { Key, Loading, Lock, Picture, User } from "@element-plus/icons-vue"
+import { Key, Loading, Lock, Picture, Umbrella, User } from "@element-plus/icons-vue"
+import sm2 from "sm-crypto"
+import { onMounted, onUnmounted, reactive, ref } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { useSettingsStore } from "@/pinia/stores/settings"
 import { useUserStore } from "@/pinia/stores/user"
-import { getCaptchaApi, loginApi } from "./apis"
+import { getMessageCodeApi, getVerifyCodeApi, loginApi } from "./apis"
 import Owl from "./components/Owl.vue"
 import { useFocus } from "./composables/useFocus"
 
 const route = useRoute()
-
 const router = useRouter()
-
 const userStore = useUserStore()
-
 const settingsStore = useSettingsStore()
-
 const { isFocus, handleBlur, handleFocus } = useFocus()
 
 /** 登录表单元素的引用 */
-const loginFormRef = useTemplateRef("loginFormRef")
+const loginFormRef = ref()
 
 /** 登录按钮 Loading */
 const loading = ref(false)
@@ -28,61 +26,156 @@ const loading = ref(false)
 /** 验证码图片 URL */
 const codeUrl = ref("")
 
+/** 状态标志 */
+const internetFlag = ref(false)
+const sendSMSFlag = ref(false)
+const waitTime = ref(60)
+const verifyCodeInterval = ref<any>(null)
+const key = "0430a96a1859f606292aa4836cc7d04e2e4d75013d23b87ce7de262e9d1885f2d0187dbb5b56d857a45a300a56d368578eca4ddbb81a740235ec9c1a80c9dc5e65"
+
 /** 登录表单数据 */
-const loginFormData: LoginRequestData = reactive({
-  username: "admin",
-  password: "12345678",
+const loginFormData: any = reactive({
+  username: "zhangjialin",
+  password: "Admin@1001",
   code: ""
 })
 
 /** 登录表单校验规则 */
-const loginFormRules: FormRules = {
+const loginFormRules: any = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" }
   ],
   password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
+    { required: true, message: "请输入密码", trigger: "blur" }
   ],
   code: [
     { required: true, message: "请输入验证码", trigger: "blur" }
   ]
 }
 
+/** 获取验证码 */
+function getVerCode() {
+  loginFormData.code = ""
+  codeUrl.value = ""
+  getVerifyCodeApi().then((res: any) => {
+    if (res.success) {
+      codeUrl.value = `data:image/jpeg;base64,${res.content}`
+    } else {
+      // 可能是错误消息，也可能是需要切换模式
+    }
+
+    if (res.msg === "internet" || res.content === "") {
+      internetFlag.value = true
+    }
+  }).catch((err) => {
+    console.error(err)
+  })
+}
+
+/** 发送短信 */
+function sendSMS() {
+  const data = {
+    userName: sm2.sm2.doEncrypt(loginFormData.username, key, 0),
+    password: sm2.sm2.doEncrypt(loginFormData.password, key, 0),
+    messageCode: loginFormData.code
+  }
+
+  sendSMSFlag.value = true
+  waitTime.value = 60
+  verifyCodeInterval.value = setInterval(() => {
+    waitTime.value = waitTime.value - 1
+    if (waitTime.value <= 0) {
+      clearInterval(verifyCodeInterval.value)
+      sendSMSFlag.value = false
+    }
+  }, 1000)
+
+  getMessageCodeApi(data).then((res: any) => {
+    if (res.status === -1) {
+      ElNotification({
+        title: "error",
+        type: "error",
+        message: res.msg
+      })
+      clearInterval(verifyCodeInterval.value)
+      sendSMSFlag.value = false
+    } else {
+      ElNotification({
+        title: "success",
+        type: "success",
+        message: "短信已发送"
+      })
+    }
+  })
+}
+
 /** 登录 */
 function handleLogin() {
-  loginFormRef.value?.validate((valid) => {
+  loginFormRef.value?.validate((valid: any) => {
     if (!valid) {
-      ElMessage.error("表单校验不通过")
       return
     }
     loading.value = true
-    loginApi(loginFormData).then(({ data }) => {
-      userStore.setToken(data.token)
-      router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : "/")
-    }).catch(() => {
-      createCode()
-      loginFormData.password = ""
+
+    let data: any = {}
+    if (internetFlag.value) {
+      data = {
+        userName: sm2.sm2.doEncrypt(loginFormData.username, key, 0),
+        password: sm2.sm2.doEncrypt(loginFormData.password, key, 0),
+        messageCode: loginFormData.code
+        // openId: "" // 如果需要支持微信登录后续再加
+      }
+    } else {
+      data = {
+        userName: sm2.sm2.doEncrypt(loginFormData.username, key, 0),
+        password: sm2.sm2.doEncrypt(loginFormData.password, key, 0),
+        verifyCode: loginFormData.code
+      }
+    }
+
+    loginApi(data).then((res: any) => {
+      if (res.success) {
+        const token = res.content.token
+        const userName = res.content.userName
+        const userInfo = JSON.stringify(res.content.userInfo)
+
+        userStore.setToken(token)
+        localStorage.setItem("TOKEN", token)
+        sessionStorage.setItem("userName", userName)
+        sessionStorage.setItem("userInfo", userInfo)
+
+        const reset = res.content.userInfo.reset
+        if (reset != "1") {
+          router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : "/")
+        } else {
+          router.push({ name: "uppwd" }) // 需要确保路由存在
+        }
+      } else {
+        ElMessage.error(res.content ? res.content : res.msg)
+        getVerCode()
+      }
+    }).catch((error: any) => {
+      ElNotification({
+        title: "error",
+        type: "error",
+        message: error.message || "登录失败"
+      })
+      getVerCode()
     }).finally(() => {
       loading.value = false
     })
   })
 }
 
-/** 创建验证码 */
-function createCode() {
-  // 清空已输入的验证码
-  loginFormData.code = ""
-  // 清空验证图片
-  codeUrl.value = ""
-  // 获取验证码图片
-  getCaptchaApi().then((res) => {
-    codeUrl.value = res.data
-  })
-}
+onMounted(() => {
+  getVerCode()
+})
 
-// 初始化验证码
-createCode()
+onUnmounted(() => {
+  if (verifyCodeInterval.value) {
+    clearInterval(verifyCodeInterval.value)
+  }
+})
 </script>
 
 <template>
@@ -91,7 +184,7 @@ createCode()
     <Owl :close-eyes="isFocus" />
     <div class="login-card">
       <div class="title">
-        <img src="@@/assets/images/layouts/logo-text-2.png">
+        <img src="@@/assets/images/layouts/iopLogo2.png">
       </div>
       <div class="content">
         <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
@@ -121,17 +214,20 @@ createCode()
           <el-form-item prop="code">
             <el-input
               v-model.trim="loginFormData.code"
-              placeholder="验证码"
+              :placeholder="internetFlag ? '短信验证码' : '验证码'"
               type="text"
               tabindex="3"
-              :prefix-icon="Key"
+              :prefix-icon="internetFlag ? Umbrella : Key"
               maxlength="7"
               size="large"
               @blur="handleBlur"
               @focus="handleFocus"
             >
               <template #append>
-                <el-image :src="codeUrl" draggable="false" @click="createCode">
+                <div v-if="internetFlag" class="sms-btn" @click="sendSMS" :class="{ 'is-disabled': sendSMSFlag }">
+                  {{ sendSMSFlag ? `${waitTime}s` : '发送短信' }}
+                </div>
+                <el-image v-else :src="codeUrl" draggable="false" @click="getVerCode">
                   <template #placeholder>
                     <el-icon>
                       <Picture />
@@ -197,6 +293,24 @@ createCode()
           user-select: none;
           cursor: pointer;
           text-align: center;
+        }
+        .sms-btn {
+          width: 100px;
+          height: 40px;
+          line-height: 40px;
+          text-align: center;
+          cursor: pointer;
+          user-select: none;
+          font-size: 14px;
+          background-color: var(--el-fill-color-light);
+          color: var(--el-text-color-regular);
+          &:hover {
+            background-color: var(--el-fill-color);
+          }
+          &.is-disabled {
+            cursor: not-allowed;
+            color: var(--el-text-color-placeholder);
+          }
         }
       }
       .el-button {

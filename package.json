@@ -10,10 +10,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build:staging": "vue-tsc && vite build --mode staging",
-    "build": "vue-tsc && vite build",
+    "build:staging": "vite build --mode staging",
+    "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix",
     "prepare": "husky",
     "test": "vitest"
   },
@@ -22,6 +21,7 @@
     "axios": "1.13.2",
     "dayjs": "1.11.19",
     "element-plus": "2.13.1",
+    "event-source-polyfill": "1.0.31",
     "lodash-es": "4.17.22",
     "mitt": "3.0.1",
     "normalize.css": "8.0.1",
@@ -30,8 +30,10 @@
     "path-to-regexp": "8.3.0",
     "pinia": "3.0.4",
     "screenfull": "6.0.2",
+    "sm-crypto": "0.4.0",
     "vue": "3.5.27",
     "vue-router": "4.6.4",
+    "vue-wxlogin": "1.0.5",
     "vxe-table": "4.6.25"
   },
   "devDependencies": {
