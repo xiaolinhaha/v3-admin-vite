@@ -1,6 +1,4 @@
-<script lang="ts" setup>
-import type { CreateOrUpdateTableRequestData, TableData } from "@@/apis/tables/type"
-import type { FormRules } from "element-plus"
+<script setup>
 import { createTableDataApi, deleteTableDataApi, getTableDataApi, updateTableDataApi } from "@@/apis/tables"
 import { usePagination } from "@@/composables/usePagination"
 import { CirclePlus, Delete, Download, Refresh, RefreshRight, Search } from "@element-plus/icons-vue"
@@ -11,24 +9,24 @@ defineOptions({
   name: "ElementPlus"
 })
 
-const loading = ref<boolean>(false)
+const loading = ref(false)
 
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
 
 // #region 增
-const DEFAULT_FORM_DATA: CreateOrUpdateTableRequestData = {
+const DEFAULT_FORM_DATA = {
   id: undefined,
   username: "",
   password: ""
 }
 
-const dialogVisible = ref<boolean>(false)
+const dialogVisible = ref(false)
 
 const formRef = useTemplateRef("formRef")
 
-const formData = ref<CreateOrUpdateTableRequestData>(cloneDeep(DEFAULT_FORM_DATA))
+const formData = ref(cloneDeep(DEFAULT_FORM_DATA))
 
-const formRules: FormRules<CreateOrUpdateTableRequestData> = {
+const formRules = {
   username: [{ required: true, trigger: "blur", message: "请输入用户名" }],
   password: [{ required: true, trigger: "blur", message: "请输入密码" }]
 }
@@ -58,7 +56,7 @@ function resetForm() {
 // #endregion
 
 // #region 删
-function handleDelete(row: TableData) {
+function handleDelete(row) {
   ElMessageBox.confirm(`正在删除用户：${row.username}，确认删除？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
@@ -73,14 +71,14 @@ function handleDelete(row: TableData) {
 // #endregion
 
 // #region 改
-function handleUpdate(row: TableData) {
+function handleUpdate(row) {
   dialogVisible.value = true
   formData.value = cloneDeep(row)
 }
 // #endregion
 
 // #region 查
-const tableData = ref<TableData[]>([])
+const tableData = ref([])
 
 const searchFormRef = useTemplateRef("searchFormRef")
 

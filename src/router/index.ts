@@ -52,7 +52,10 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: "IntelligentCustomerInner",
     meta: {
       title: "智能客服",
-      elIcon: "Service"
+      elIcon: "Service",
+      target: "_blank",
+      openMode: "window",
+      withToken: true
     }
   },
   {

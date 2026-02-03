@@ -77,7 +77,7 @@
                   filterable
                   v-model="localDefaultStopNum"
                   @change="changeStopNumData"
-                  size="mini"
+                  size="small"
                   placeholder="请选择并发量"
                   :disabled="stopMaxNum == 0"
                   class="biztype-select"
@@ -153,8 +153,8 @@
       </div>
    </div>
 </template>
-<script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, onUpdated, nextTick, watch, type PropType } from 'vue';
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount, onUpdated, nextTick, watch } from 'vue';
 import ChatPanel from "./ChatPanel.vue";
 import OwlPhone from "../OwlPhoneComponent.vue";
 import { useOwl } from "../composables/useOwl";
@@ -162,13 +162,13 @@ import { ElMessage as message } from "element-plus";
 import { updateUserLineNum } from '../apis';
 
 const props = defineProps({
-   conversations: { type: Array as PropType<any[]>, default: () => [] },
-   info: { type: Object as PropType<any>, default: () => ({ bizType: "" }) },
-   bizTypes: { type: Object as PropType<any>, default: () => ({}) },
+   conversations: { type: Array, default: () => [] },
+   info: { type: Object, default: () => ({ bizType: "" }) },
+   bizTypes: { type: Object, default: () => ({}) },
    callType: { type: String, default: "logout" },
-   biztypeSession: { type: Function as PropType<(...args: any[]) => void>, default: () => {} },
-   pinnedList: { type: Array as PropType<any[]>, default: () => [] },
-   labelList: { type: Array as PropType<any[]>, default: () => [] },
+   biztypeSession: { type: Function, default: () => {} },
+   pinnedList: { type: Array, default: () => [] },
+   labelList: { type: Array, default: () => [] },
    btnStatus: { type: String, default: "" },
    stopMaxNum: { type: Number, default: 100 },
    defaultStopNum: { type: Number, default: 100 },
@@ -190,13 +190,13 @@ watch(() => props.defaultStopNum, (val) => {
    localDefaultStopNum.value = val;
 });
 
-const chipsList = ref<HTMLElement | null>(null);
-const panelsWrapper = ref<HTMLElement | null>(null);
+const chipsList = ref(null);
+const panelsWrapper = ref(null);
 
 // Dynamic refs for panels
-const panelRefs = ref<Record<string, HTMLElement | null>>({});
+const panelRefs = ref({});
 
-const setPanelRef = (el: any, id: any) => {
+const setPanelRef = (el, id) => {
    if (el) {
       panelRefs.value[`panel-${id}`] = el;
    }
@@ -206,7 +206,7 @@ const setPanelRef = (el: any, id: any) => {
 const hasEventType = computed(() => {
    return (
       Array.isArray(props.conversations) &&
-      props.conversations.some((c: any) => c && c.eventType && c.eventType == "NEW")
+      props.conversations.some((c) => c && c.eventType && c.eventType == "NEW")
    );
 });
 
@@ -223,10 +223,10 @@ const tootipData = computed(() => {
 const eventTypeConversations = computed(() => {
    if (!Array.isArray(props.conversations)) return [];
    
-   const pinned: any[] = [];
-   const unpinned: any[] = [];
+   const pinned = [];
+   const unpinned = [];
    
-   props.conversations.forEach((c: any) => {
+   props.conversations.forEach((c) => {
       if (c && c.eventType && c.eventType == "NEW") {
          if (props.pinnedList.includes(c.id)) {
             pinned.push(c);
@@ -242,10 +242,10 @@ const eventTypeConversations = computed(() => {
 const eventTypeNoConversations = computed(() => {
    if (!Array.isArray(props.conversations)) return [];
    
-   const pinned: any[] = [];
-   const unpinned: any[] = [];
+   const pinned = [];
+   const unpinned = [];
    
-   props.conversations.forEach((c: any) => {
+   props.conversations.forEach((c) => {
       if (c && c.eventType && c.eventType !== "NEW") {
          if (props.pinnedList.includes(c.id)) {
             pinned.push(c);
@@ -261,7 +261,7 @@ const eventTypeNoConversations = computed(() => {
 // --- Lifecycle ---
 onMounted(() => {
    if (props.conversations.length > 0) {
-      activeTab.value = (props.conversations[0] as any).id;
+      activeTab.value = props.conversations[0].id;
    }
    setTimeout(() => {
       showDefaultChips.value = false;
@@ -292,17 +292,17 @@ onUpdated(() => {
 //    // }
 // };
 
-const handlePanelClick = (id: any) => {
+const handlePanelClick = (id) => {
    activeTab.value = id;
    handleScrollTo(id);
 };
 
-const handleTabClick = (id: any) => {
+const handleTabClick = (id) => {
    activeTab.value = id;
    handleScrollTo(id);
 };
 
-const handleScrollTo = (id: any) => {
+const handleScrollTo = (id) => {
    const target = panelRefs.value[`panel-${id}`];
    if (!target) return;
    const container = panelsWrapper.value;
@@ -317,11 +317,11 @@ const handleScrollTo = (id: any) => {
    smoothScroll(container, targetScrollLeft, 800);
 };
 
-const smoothScroll = (element: any, target: any, duration: any) => {
+const smoothScroll = (element, target, duration) => {
    const start = element.scrollLeft;
    const change = target - start;
    const startTime = performance.now();
-   const animateScroll = (currentTime: any) => {
+   const animateScroll = (currentTime) => {
       const timeElapsed = currentTime - startTime;
       const progress = Math.min(timeElapsed / duration, 1);
       const ease =
@@ -340,7 +340,7 @@ const handleHangupRequest = () => {
    // emit("remove-conversation", id);
 };
 
-const changeBtnStatus = (id: any) => {
+const changeBtnStatus = (id) => {
   emit("change-status", id);
 };
 
@@ -357,7 +357,7 @@ const checkScroll = () => {
    showScrollRight.value = scrollWidth - clientWidth - scrollLeft > tolerance;
 };
 
-const scrollChips = (direction: any) => {
+const scrollChips = (direction) => {
    const el = chipsList.value;
    if (!el) return;
    const scrollAmount = 200;
@@ -371,7 +371,7 @@ const scrollChips = (direction: any) => {
    });
 };
 
-const getPanelStyle = (c: any) => {
+const getPanelStyle = (c) => {
    let rgb = "245, 108, 108";
    if (c && c.flag === "yellow") {
       rgb = "230, 162, 60";
@@ -392,7 +392,7 @@ const getPanelStyle = (c: any) => {
    };
 };
 
-const changeStopNumData = async (val: any) => {
+const changeStopNumData = async (val) => {
    if(props.info.bizType) {
       const res = await updateUserLineNum({
          lineNum: val,

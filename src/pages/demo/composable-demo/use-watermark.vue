@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { useWatermark } from "@@/composables/useWatermark"
 
 const localRef = useTemplateRef("localRef")

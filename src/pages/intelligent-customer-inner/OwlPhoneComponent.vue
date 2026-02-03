@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useOwl } from './composables/useOwl'
 import Webrtc from './WebRtc.vue'
@@ -47,8 +47,8 @@ const {
   wsStatus,
 } = useOwl(emit)
 
-const wrtRef = ref<any>(null)
-const rtcStatus = ref<'disconnected' | 'connecting' | 'connected'>('disconnected')
+const wrtRef = ref(null)
+const rtcStatus = ref('disconnected')
 
 const connectionStatus = computed(() => {
   if (!isLogined.value) return 'disconnected'
@@ -75,7 +75,7 @@ const connectionStatusText = computed(() => {
   }
 })
 
-const onRtcStatusChange = (status: 'disconnected' | 'connecting' | 'connected') => {
+const onRtcStatusChange = (status) => {
   rtcStatus.value = status
 }
 

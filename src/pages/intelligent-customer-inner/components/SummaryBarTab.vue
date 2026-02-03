@@ -13,7 +13,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -51,7 +51,7 @@ const items = computed(() => {
   ]
 })
 
-function format(v: any) {
+function format(v) {
   try {
     return new Intl.NumberFormat().format(v)
   } catch (e) {

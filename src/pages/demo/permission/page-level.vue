@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import SwitchRoles from "./components/SwitchRoles.vue"
 </script>
 

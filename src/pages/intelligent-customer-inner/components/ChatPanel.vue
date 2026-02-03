@@ -214,9 +214,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { colJson, HCSColJson, HCSSectionOptions, defaultSectionOptions } from '../config'
 import { useOwl } from '../composables/useOwl'
@@ -252,8 +251,8 @@ const { globalOwlInfo, globalCallInfo, mutations } = useOwl()
 // --- State ---
 const showMoreDetails = ref(false)
 const commNote = ref('')
-const simMessages = ref<any[]>([])
-const pendingQueue = ref<any[]>([])
+const simMessages = ref([])
+const pendingQueue = ref([])
 const drainTimer = ref<any>(null)
 const drainIntervalMs = ref(800)
 const typewriterSpeedMs = ref(20)
@@ -268,9 +267,9 @@ const activeCallType = ref('')
 const durationSeconds = ref(0)
 const durationTimer = ref<any>(null)
 const disabledButtons = ref<any>({ call: false, hangup: false })
-const custInfoList = ref<any[]>([])
+const custInfoList = ref([])
 const sectionOptions = ref(defaultSectionOptions)
-const selectedTagIndexes = ref<any[]>([])
+const selectedTagIndexes = ref([])
 const showDel = ref(false)
 const oprateStatus = ref('call')
 const killStatus = ref('')
@@ -419,10 +418,10 @@ const showHangUpLabel = computed(() => {
 
 // --- Methods ---
 
-function extractParts(item: any) {
+function extractParts(item) {
   if (!item) return []
   if (Array.isArray(item.parts)) {
-    return item.parts.map((p: any) => ({ type: p.type === 'user' ? 'user' : 'agent', content: p.content }))
+    return item.parts.map((p) => ({ type: p.type === 'user' ? 'user' : 'agent', content: p.content }))
   }
   const parts = []
   if (item.script) parts.push({ type: 'agent', content: item.script })
@@ -430,16 +429,18 @@ function extractParts(item: any) {
   return parts
 }
 
-function normalizePartsToMessages(item: any, startIndex: number) {
+function normalizePartsToMessages(item, startIndex){
   const parts = extractParts(item)
   const begin = Math.max(0, startIndex | 0)
   const slice = parts.slice(begin)
-  const baseId = item && item.id ? String(item.id) : String(Math.random())
-  return slice.map((p: any, idx: number) => ({
-    id: `${baseId}-${begin + idx}-${p.type === 'user' ? 'u' : 'a'}`,
-    sender: p.type === 'user' ? 'user' : 'agent',
-    content: p.content
-  }))
+  const baseId = item && item.id ? String(item.id) : String(Math.random()) // 修复这里：添加冒号和正确的逻辑
+  return slice.map((p, idx) => {
+    return {
+      id: `${baseId}-${begin + idx}-${p.type === 'user' ? 'u' : 'a'}`,
+      sender: p.type === 'user' ? 'user' : 'agent',
+      content: p.content
+    }
+  })
 }
 
 function toggleMoreDetails() {
@@ -466,7 +467,7 @@ function handleSave() {
           ElMessage.error(res.data.msg)
         }
       })
-      .catch((e: any) => {
+      .catch((e) => {
         ElMessage.error(e.msg)
       })
       .finally(() => {})
@@ -476,13 +477,13 @@ function handleSave() {
 }
 
 // Transition Hooks
-function beforeEnter(el: any) {
+function beforeEnter(el) {
   el.style.height = '0'
   el.style.opacity = '0.001'
   el.style.overflow = 'hidden'
 }
 
-function enter(el: any) {
+function enter(el) {
   const h = el.scrollHeight
   el.style.transition = 'height 0.25s ease, opacity 0.25s ease'
   requestAnimationFrame(() => {
@@ -491,19 +492,19 @@ function enter(el: any) {
   })
 }
 
-function afterEnter(el: any) {
+function afterEnter(el) {
   el.style.height = 'auto'
   el.style.overflow = ''
   el.style.transition = ''
 }
 
-function beforeLeave(el: any) {
+function beforeLeave(el) {
   el.style.height = el.scrollHeight + 'px'
   el.style.opacity = '1'
   el.style.overflow = 'hidden'
 }
 
-function leave(el: any) {
+function leave(el) {
   el.style.transition = 'height 0.25s ease, opacity 0.25s ease'
   requestAnimationFrame(() => {
     el.style.height = '0'
@@ -511,7 +512,7 @@ function leave(el: any) {
   })
 }
 
-function afterLeave(el: any) {
+function afterLeave(el) {
   el.style.height = ''
   el.style.opacity = ''
   el.style.overflow = ''
@@ -537,7 +538,7 @@ function callOut() {
   })
 }
 
-function isButtonDisabled(type: string) {
+function isButtonDisabled(type) {
   return !!disabledButtons.value[type] || isGlobalLocked.value
 }
 
@@ -555,7 +556,7 @@ function handleUnmuteAudio() {
   ElMessage.success('取消静音成功！')
 }
 
-function toggleCall(callType: string) {
+function toggleCall(callType) {
   console.log("callType ---->>>>>", callType)
   if (btnStatusAll.value == props.conversation.id) {
     // Current conversation
@@ -620,7 +621,7 @@ function toggleCall(callType: string) {
         } else {
           ElMessage.error(res.data.msg)
         }
-      }).catch((e: any) => { ElMessage.error(e.msg) })
+      }).catch((e) => { ElMessage.error(e.msg) })
     })
   } else {
     listenSeat({
@@ -660,7 +661,7 @@ function toggleCall(callType: string) {
         activeCallType.value = ''
         killStatus.value = ''
       }
-    }).catch((e: any) => {
+    }).catch((e) => {
       activeCallType.value = ''
       killStatus.value = ''
       ElMessage.error(e.msg)
@@ -677,7 +678,7 @@ function changeDanger() {
   }
 }
 
-function buttonClass(type: string) {
+function buttonClass(type) {
   return activeCallType.value === type
     ? 'action-button primary'
     : 'action-button secondary-blue'
@@ -689,11 +690,11 @@ function resetButtonDisabled() {
   activeCallType.value = ''
 }
 
-function likeMessage(messageId: string) {
+function likeMessage(messageId) {
   emit('like-message', messageId)
 }
 
-function dislikeMessage(messageId: string) {
+function dislikeMessage(messageId) {
   emit('dislike-message', messageId)
 }
 
@@ -703,16 +704,16 @@ function scrollToBottom() {
   }
 }
 
-function normalizeMsgItem(item: any) {
+function normalizeMsgItem(item) {
   return normalizePartsToMessages(item, 0)
 }
 
-function normalizeMsgList(msgList: any) {
+function normalizeMsgList(msgList) {
   if (!Array.isArray(msgList)) return []
-  return msgList.reduce((acc: any, it: any) => acc.concat(normalizeMsgItem(it)), [])
+  return msgList.reduce((acc, it) => acc.concat(normalizeMsgItem(it)), [])
 }
 
-function enqueueNewItems(items: any) {
+function enqueueNewItems(items) {
   if (!Array.isArray(items) || !items.length) return
   items.forEach(it => {
     if (!it || !it.id) return
@@ -758,7 +759,7 @@ function stopDuration() {
   }
 }
 
-function parseDateTime(str: any) {
+function parseDateTime(str) {
   if (!str || typeof str !== 'string') return null
   const [datePart, timePart] = str.split(' ')
   if (!datePart || !timePart) return null
@@ -813,7 +814,7 @@ function drainNext() {
   }, delay)
 }
 
-function startTypewriter(msg: any) {
+function startTypewriter(msg) {
   const total = (msg.content || '').length
   let i = 0
   const id = msg.id
@@ -842,8 +843,8 @@ function syncInitial() {
   const normalized = normalizeMsgList(raw)
   simMessages.value = []
   pendingQueue.value = normalized.slice()
-  const counts: any = {}
-  raw.forEach((it: any) => {
+  const counts = {}
+  raw.forEach((it) => {
     if (it && it.id) counts[it.id] = extractParts(it).length
   })
   renderedPartCounts.value = counts
@@ -853,16 +854,16 @@ function syncInitial() {
   startDurationFromFirstMessage()
 }
 
-async function setFloatingFields(val: string) {
+async function setFloatingFields(val) {
   const newIsBizType = !(val && val.split('_')[1] && ['CSM', 'HCS'].includes(val.split('_')[1]))
   custInfoList.value = newIsBizType ? HCSColJson : colJson
 }
 
-function isTagSelected(i: any) {
+function isTagSelected(i) {
   return selectedTagIndexes.value.indexOf(i) !== -1
 }
 
-function toggleTag(i: any) {
+function toggleTag(i) {
   const pos = selectedTagIndexes.value.indexOf(i)
   if (pos !== -1) {
     selectedTagIndexes.value.splice(pos, 1)
@@ -875,7 +876,7 @@ function toggleTag(i: any) {
   }
 }
 
-function handleCopy(text: string) {
+function handleCopy(text) {
   if (!text) return
   const input = document.createElement('input')
   input.value = text

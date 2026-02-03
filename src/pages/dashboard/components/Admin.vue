@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import SvgDashboard from "../images/dashboard.svg?component" // vite-svg-loader 插件的功能
 </script>
 

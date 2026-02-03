@@ -1,7 +1,4 @@
-<script lang="ts" setup>
-import type { TableResponseData } from "@@/apis/tables/type"
-import type { ElMessageBoxOptions } from "element-plus"
-import type { VxeFormInstance, VxeFormProps, VxeGridInstance, VxeGridProps, VxeModalInstance, VxeModalProps } from "vxe-table"
+<script setup>
 import { deleteTableDataApi, getTableDataApi } from "@@/apis/tables"
 
 defineOptions({
@@ -10,21 +7,9 @@ defineOptions({
 })
 
 // #region vxe-grid
-interface RowMeta {
-  id: number
-  username: string
-  roles: string
-  phone: string
-  email: string
-  status: boolean
-  createTime: string
-  /** vxe-table 自动添加上去的属性 */
-  _VXE_ID?: string
-}
+const xGridDom = useTemplateRef("xGridDom")
 
-const xGridDom = useTemplateRef<VxeGridInstance>("xGridDom")
-
-const xGridOpt: VxeGridProps = reactive({
+const xGridOpt = reactive({
   loading: true,
   autoResize: true,
   /** 分页配置项 */
@@ -150,9 +135,9 @@ const xGridOpt: VxeGridProps = reactive({
         crudStore.clearTable()
         return new Promise((resolve) => {
           let total = 0
-          let result: RowMeta[] = []
+          let result = []
           // 加载数据
-          const callback = (res: TableResponseData) => {
+          const callback = (res) => {
             if (res?.data) {
               // 总数
               total = res.data.total
@@ -180,9 +165,9 @@ const xGridOpt: VxeGridProps = reactive({
 // #endregion
 
 // #region vxe-modal
-const xModalDom = useTemplateRef<VxeModalInstance>("xModalDom")
+const xModalDom = useTemplateRef("xModalDom")
 
-const xModalOpt: VxeModalProps = reactive({
+const xModalOpt = reactive({
   title: "",
   showClose: true,
   escClosable: true,
@@ -195,9 +180,9 @@ const xModalOpt: VxeModalProps = reactive({
 // #endregion
 
 // #region vxe-form
-const xFormDom = useTemplateRef<VxeFormInstance>("xFormDom")
+const xFormDom = useTemplateRef("xFormDom")
 
-const xFormOpt: VxeFormProps = reactive({
+const xFormOpt = reactive({
   span: 24,
   titleWidth: "100px",
   loading: false,
@@ -298,7 +283,7 @@ const crudStore = reactive({
   /** 清空表格数据 */
   clearTable: () => xGridDom.value?.reloadData([]),
   /** 点击显示弹窗 */
-  onShowModal: (row?: RowMeta) => {
+  onShowModal: (row) => {
     if (row) {
       crudStore.isUpdate = true
       xModalOpt.title = "修改用户"
@@ -350,9 +335,9 @@ const crudStore = reactive({
     }
   },
   /** 删除 */
-  onDelete: (row: RowMeta) => {
+  onDelete: (row) => {
     const tip = `确定 <strong style="color: var(--el-color-danger);"> 删除 </strong> 用户 <strong style="color: var(--el-color-primary);"> ${row.username} </strong> ？`
-    const config: ElMessageBoxOptions = {
+    const config = {
       type: "warning",
       showClose: true,
       closeOnClickModal: true,
@@ -371,7 +356,7 @@ const crudStore = reactive({
   },
   /** 删除后是否返回上一页 */
   afterDelete: () => {
-    const tableData: RowMeta[] = xGridDom.value!.getData()
+    const tableData = xGridDom.value?.getData() || []
     const pager = xGridDom.value?.getProxyInfo()?.pager
     if (pager && pager.currentPage > 1 && tableData.length === 1) {
       --pager.currentPage

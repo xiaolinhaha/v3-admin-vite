@@ -26,8 +26,9 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, reactive, onMounted, onBeforeUnmount, watch, computed, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import ChatBoard from './components/ChatBoard.vue'
 import SummaryBar from './components/SummaryBarTab.vue'
 import { EventSourcePolyfill } from 'event-source-polyfill'
@@ -53,32 +54,38 @@ const summary = ref({
   pendingCall: 0,
   call: 0,
 })
-const conversations = ref<any[]>([])
-const allConversations = ref<any[]>([])
-const addTimer = ref<any>(null)
-const flipTimers = ref<any>({})
-const flipPlan = ref<any>({})
-const pollTimer = ref<any>(null)
+const conversations = ref([])
+const allConversations = ref([])
+const addTimer = ref(null)
+const flipTimers = ref({})
+const flipPlan = ref({})
+const pollTimer = ref(null)
 const pollIntervalMs = ref(30000)
-const eventSource = ref<any>(null)
-const sseTimer = ref<any>(null)
+const eventSource = ref(null)
+const sseTimer = ref(null)
 const num = ref(0)
+const route = useRoute()
+const routeToken = computed(() => (route.query.token ? String(route.query.token) : ""))
+const routeSeatId = computed(() => (route.query.seatId ? String(route.query.seatId) : ""))
+const routeBizType = computed(() => (route.query.bizType ? String(route.query.bizType) : ""))
+const authToken = computed(() => routeToken.value || localStorage.getItem('TOKEN') || '')
+
 const info = reactive({
   appId: 'iop',
-  seatId: sessionStorage.getItem('userName') || 'zhangjialin',
+  seatId: routeSeatId.value || sessionStorage.getItem('userName') || 'zhangjialin',
   extNo: '',
   bizType: '',
   sToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJBUFAiLCJ1c2VyX2lkIjoiU1lTVEVNLDY1MzdfWVhIRF8xNywwMzA1X0NTTV9LMSIsImlzcyI6IlNlcnZpY2UiLCJpYXQiOjE3NjkxNDc0NDN9.iTCaIOdXreEZYek8NPoAvpZe1ODhMzj5D3GFZVNkwYQ',
-  token: localStorage.getItem('TOKEN') || '',
+  token: authToken.value,
 })
 const callType = ref('logout')
-const bizTypes = ref<any>({})
-const pinnedList = ref<string[]>([])
+const bizTypes = ref({})
+const pinnedList = ref([])
 const isFullScreen = ref(false)
-const intelligentOptions = ref<any[]>([])
-const bizTypeSelect = ref(sessionStorage.getItem('biztype') || '')
+const intelligentOptions = ref([])
+const bizTypeSelect = ref(routeBizType.value || sessionStorage.getItem('biztype') || '')
 const btnStatus = ref('')
-const voiceListData = ref<any[]>([])
+const voiceListData = ref([])
 const stopMaxNum = ref(0)
 const defaultStopNum = ref(0)
 const tooltipTitle = ref('')
@@ -91,6 +98,17 @@ const clearStatusHangOut = computed(() => globalCallInfo.hangOutAllStatus)
 
 // --- Lifecycle ---
 onMounted(() => {
+  if (routeSeatId.value) {
+    sessionStorage.setItem('userName', routeSeatId.value)
+    info.seatId = routeSeatId.value
+  }
+  if (routeBizType.value) {
+    sessionStorage.setItem('biztype', routeBizType.value)
+    info.bizType = routeBizType.value
+  }
+  if (authToken.value) {
+    info.token = authToken.value
+  }
   fetchBizTypes()
   startSummaryPolling()
   createSSE()
@@ -116,16 +134,16 @@ async function fetchBizTypes() {
     console.log(response, '获取业务类型列表')
     if (response && response.status === 0) {
       const content = response.content || []
-      const map: any = {}
-      content.forEach((item: any) => { map[item.code] = item.label })
+      const map = {}
+      content.forEach((item) => { map[item.code] = item.label })
       bizTypes.value = map
     }
-  } catch (error: any) {
-    ElMessage.error(error.message || String(error))
+  } catch (error) {
+    ElMessage.error(error?.message || String(error))
   }
 }
 
-function biztypeSession(val: string) {
+function biztypeSession(val) {
   if (btnStatus.value) {
     // Revert change if busy
     // info.bizType = info.bizType (no-op)
@@ -184,7 +202,7 @@ async function getLabels() {
         const data = res.content.records[0] || ""
         if (data) {
           const lists = data.labelList.split(',');
-          intelligentOptions.value = lists.map((item: any) => ({
+          intelligentOptions.value = lists.map((item) => ({
             label: item,
             value: item,
           }));
@@ -197,7 +215,7 @@ async function getLabels() {
   const res = await getVoiceList()
 
   if (res && res.status == 0) {
-    const newList = res.content.map((newItem: any) => {
+    const newList = res.content.map((newItem) => {
       return {
         voiceName: newItem.voiceName,
         voiceCode: newItem.ttsTemplate,
@@ -252,12 +270,12 @@ function createSSE() {
         token: '1',
         appId: `${info.appId}`,
         reconnectInterval: 'false'
-  }).then((res: any) => {
+  }).then((res) => {
     const newToken = res.content
     if (selectedBizType) {
         info.bizType = selectedBizType
         
-        if ((window as any).EventSource) {
+        if (window.EventSource) {
           eventSource.value = new EventSourcePolyfill(
             `/iopApiAdmin/record/sse/connect/?bizType=${selectedBizType}&seatId=${info.seatId}`,
             {
@@ -272,12 +290,12 @@ function createSSE() {
               heartbeatTimeout: 1000 * 60 * 60,
             }
           )
-          eventSource.value.onopen = (e: any) => {
+          eventSource.value.onopen = (e) => {
             clearTimeout(sseTimer.value)
             num.value = 0
             console.log('已连接', e)
           }
-          eventSource.value.onmessage = (e: any) => {
+          eventSource.value.onmessage = (e) => {
             try {
               console.log('SSE 获取消息', e)
               const infoData = JSON.parse(e)
@@ -286,7 +304,7 @@ function createSSE() {
               console.log('SSE 消息解析失败', err, e && e.data)
             }
           }
-          eventSource.value.onerror = (e: any) => {
+          eventSource.value.onerror = (e) => {
             console.log('已关闭', e)
             if (e.type === 'error') {
               eventSource.value.close()
@@ -341,7 +359,7 @@ function clearFlipTimers() {
   flipTimers.value = {}
 }
 
-function removeConversation(id: string) {
+function removeConversation(id) {
   if (!id) return
   try {
     const pinnedIndex = pinnedList.value.indexOf(globalCallInfo.id)
@@ -360,12 +378,12 @@ function removeConversation(id: string) {
   mutations.setId('')
 }
 
-function changeBtnStatus(id: string) {
+function changeBtnStatus(id) {
   console.log("changeBtnStatus ----->>>>", id)
   btnStatus.value = id || ''
 }
 
-function applySSEUpdate(infoData: any) {
+function applySSEUpdate(infoData) {
   console.log(" applySSEUpdate --->", infoData)
   if (!infoData || !infoData.callId) return
   const { callId, eventType, summary = {}, msgList = [], danger, voiceCode } = infoData
@@ -410,7 +428,7 @@ function applySSEUpdate(infoData: any) {
     }
   }
 
-  const coalesce3 = (a: any, b: any, c: any) => (a !== undefined && a !== null ? a : (b !== undefined && b !== null ? b : c))
+  const coalesce3 = (a, b, c) => (a !== undefined && a !== null ? a : (b !== undefined && b !== null ? b : c))
   const voiceNameStr = voiceListData.value.find(voiceItem => voiceItem.voiceCode == voiceCode)
   
   const updated = {
@@ -434,7 +452,7 @@ function applySSEUpdate(infoData: any) {
       var incoming = Array.isArray(msgList) ? msgList : []
       var existing = Array.isArray(base.messages) ? base.messages : []
       
-      function toParts(item: any) {
+      function toParts(item) {
         if (!item) return { id: undefined, parts: [] }
         var id = item.id
         var parts = []
@@ -456,7 +474,7 @@ function applySSEUpdate(infoData: any) {
         return incoming.map(toParts)
       }
       
-      var idIndex: any = {}
+      var idIndex = {}
       for (var i = 0; i < existing.length; i++) {
         var it = toParts(existing[i])
         existing[i] = it
@@ -473,11 +491,11 @@ function applySSEUpdate(infoData: any) {
           var prevParts = Array.isArray(prev.parts) ? prev.parts : []
           var nextParts = Array.isArray(ni.parts) ? ni.parts : []
           
-          function eq(a: any, b: any) {
+          function eq(a, b) {
             return !!a && !!b && a.type === b.type && String(a.content) === String(b.content)
           }
           
-          function overlapCount(a: any, b: any) {
+          function overlapCount(a, b) {
             var max = Math.min(a.length, b.length)
             for (var m = max; m > 0; m--) {
               var match = true
@@ -512,7 +530,7 @@ function applySSEUpdate(infoData: any) {
   }
 }
 
-function togglePin({ id }: any) {
+function togglePin({ id }) {
   const index = pinnedList.value.indexOf(id)
   if (index !== -1) {
     pinnedList.value.splice(index, 1)
@@ -545,8 +563,8 @@ function closeSseEvn() {
 // --- Watchers ---
 
 watch(isFullScreen, (val) => {
-  const header = document.querySelector('.header-bar-container') as HTMLElement
-  if (header) {
+  const header = document.querySelector('.header-bar-container')
+  if (header && header.style) {
     header.style.display = val ? 'none' : ''
   }
 })

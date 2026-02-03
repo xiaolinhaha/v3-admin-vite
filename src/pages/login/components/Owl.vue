@@ -1,9 +1,7 @@
-<script lang="ts" setup>
-interface Props {
-  closeEyes: boolean
-}
-
-const props = defineProps<Props>()
+<script setup>
+const props = defineProps({
+  closeEyes: { type: Boolean, default: false }
+})
 </script>
 
 <template>

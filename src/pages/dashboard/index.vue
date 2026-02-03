@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { useUserStore } from "@/pinia/stores/user"
 import Admin from "./components/Admin.vue"
 import Editor from "./components/Editor.vue"

@@ -10,8 +10,8 @@
     "jsx": "preserve",
     "jsxImportSource": "vue",
     "lib": ["esnext", "dom"],
-    "useDefineForClassFields": true,
-    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "experimentalDecorators": false,
     // baseUrl 用来告诉编译器到哪里去查找模块，使用非相对模块时必须配置此项
     "baseUrl": ".",
     "module": "esnext",
@@ -21,24 +21,24 @@
       "@/*": ["src/*"],
       "@@/*": ["src/common/*"]
     },
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "types": ["vite/client", "element-plus/global"],
     // 允许导入 .ts .mts .tsx 拓展名的文件
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     // 允许 JS
     "allowJs": true,
     // TS 严格模式
     "strict": false,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "importHelpers": true,
+    "importHelpers": false,
     // 不输出任何编译后的文件，只进行类型检查
-    "noEmit": true,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true
+    "noEmit": false,
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": false,
+    "esModuleInterop": false,
+    "isolatedModules": false,
+    "skipLibCheck": false
   },
   // 需要被编译的文件列表
   "include": ["**/*.ts", "**/*.tsx", "**/*.vue", "**/*.d.ts"],

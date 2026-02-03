@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { ElMessage, ElNotification } from "element-plus"
 import ThemeSwitch from "@@/components/ThemeSwitch/index.vue"
 import { Key, Loading, Lock, Picture, Umbrella, User } from "@element-plus/icons-vue"
@@ -30,18 +30,18 @@ const codeUrl = ref("")
 const internetFlag = ref(false)
 const sendSMSFlag = ref(false)
 const waitTime = ref(60)
-const verifyCodeInterval = ref<any>(null)
+const verifyCodeInterval = ref(null)
 const key = "0430a96a1859f606292aa4836cc7d04e2e4d75013d23b87ce7de262e9d1885f2d0187dbb5b56d857a45a300a56d368578eca4ddbb81a740235ec9c1a80c9dc5e65"
 
 /** 登录表单数据 */
-const loginFormData: any = reactive({
+const loginFormData = reactive({
   username: "zhangjialin",
   password: "Admin@1001",
   code: ""
 })
 
 /** 登录表单校验规则 */
-const loginFormRules: any = {
+const loginFormRules = {
   username: [
     { required: true, message: "请输入用户名", trigger: "blur" }
   ],
@@ -57,7 +57,7 @@ const loginFormRules: any = {
 function getVerCode() {
   loginFormData.code = ""
   codeUrl.value = ""
-  getVerifyCodeApi().then((res: any) => {
+  getVerifyCodeApi().then((res) => {
     if (res.success) {
       codeUrl.value = `data:image/jpeg;base64,${res.content}`
     } else {
@@ -90,7 +90,7 @@ function sendSMS() {
     }
   }, 1000)
 
-  getMessageCodeApi(data).then((res: any) => {
+  getMessageCodeApi(data).then((res) => {
     if (res.status === -1) {
       ElNotification({
         title: "error",
@@ -111,13 +111,13 @@ function sendSMS() {
 
 /** 登录 */
 function handleLogin() {
-  loginFormRef.value?.validate((valid: any) => {
+  loginFormRef.value?.validate((valid) => {
     if (!valid) {
       return
     }
     loading.value = true
 
-    let data: any = {}
+    let data = {}
     if (internetFlag.value) {
       data = {
         userName: sm2.sm2.doEncrypt(loginFormData.username, key, 0),
@@ -133,7 +133,7 @@ function handleLogin() {
       }
     }
 
-    loginApi(data).then((res: any) => {
+    loginApi(data).then((res) => {
       if (res.success) {
         const token = res.content.token
         const userName = res.content.userName
@@ -146,7 +146,7 @@ function handleLogin() {
 
         const reset = res.content.userInfo.reset
         if (reset != "1") {
-          router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : "/")
+          router.push(route.query.redirect ? decodeURIComponent(String(route.query.redirect)) : "/")
         } else {
           router.push({ name: "uppwd" }) // 需要确保路由存在
         }
@@ -154,7 +154,7 @@ function handleLogin() {
         ElMessage.error(res.content ? res.content : res.msg)
         getVerCode()
       }
-    }).catch((error: any) => {
+    }).catch((error) => {
       ElNotification({
         title: "error",
         type: "error",

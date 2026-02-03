@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { RouteRecordRaw } from "vue-router"
 import { isExternal } from "@@/utils/validate"
-import path from "path-browserify"
+import * as path from "path-browserify"
 import Link from "./Link.vue"
 
 interface Props {
@@ -48,7 +48,13 @@ function resolvePath(routePath: string) {
 
 <template>
   <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
-    <Link v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
+    <Link
+      v-if="theOnlyOneChild.meta"
+      :to="resolvePath(theOnlyOneChild.path)"
+      :target="theOnlyOneChild.meta.target"
+      :open-mode="theOnlyOneChild.meta.openMode"
+      :with-token="theOnlyOneChild.meta.withToken"
+    >
       <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
         <SvgIcon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon" class="svg-icon" />
         <component v-else-if="theOnlyOneChild.meta.elIcon" :is="theOnlyOneChild.meta.elIcon" class="el-icon" />

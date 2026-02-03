@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { useFullscreenLoading } from "@@/composables/useFullscreenLoading"
 import { getErrorApi, getSuccessApi } from "./apis/use-fullscreen-loading"
 
@@ -32,7 +32,7 @@ async function queryError() {
   try {
     await useFullscreenLoading(getErrorApi, options)()
   } catch (error) {
-    ElMessage.error((error as Error).message)
+    ElMessage.error(error?.message || String(error))
   }
 }
 </script>

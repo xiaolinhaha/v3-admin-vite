@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 const route = useRoute()
 
 const router = useRouter()

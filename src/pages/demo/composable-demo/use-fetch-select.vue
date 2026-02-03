@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { useFetchSelect } from "@@/composables/useFetchSelect"
 import { getSelectDataApi } from "./apis/use-fetch-select"
 

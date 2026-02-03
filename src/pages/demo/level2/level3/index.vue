@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 defineOptions({
   name: "Level3"
 })
