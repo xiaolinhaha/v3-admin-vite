@@ -1,11 +1,13 @@
-<script lang="ts" setup>
-import type { NotifyItem } from "./type"
+<script setup>
 
-interface Props {
-  data: NotifyItem[]
-}
-
-const props = defineProps<Props>()
+const props = defineProps(
+  {
+    data: {
+      type: Array,
+      default: () => []
+    }
+  }
+)
 </script>
 
 <template>

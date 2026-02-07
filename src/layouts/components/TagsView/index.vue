@@ -1,6 +1,4 @@
-<script lang="ts" setup>
-import type { RouteLocationNormalizedGeneric, RouteRecordRaw, RouterLink } from "vue-router"
-import type { TagView } from "@/pinia/stores/tags-view"
+<script setup>
 import { useRouteListener } from "@@/composables/useRouteListener"
 import { Close } from "@element-plus/icons-vue"
 import path from "path-browserify"
@@ -19,7 +17,7 @@ const permissionStore = usePermissionStore()
 const { listenerRouteChange } = useRouteListener()
 
 /** 标签页组件元素的引用数组 */
-const tagRefs = useTemplateRef<InstanceType<typeof RouterLink>[]>("tagRefs")
+const tagRefs = useTemplateRef("tagRefs")
 
 /** 右键菜单的状态 */
 const visible = ref(false)
@@ -31,24 +29,24 @@ const top = ref(0)
 const left = ref(0)
 
 /** 当前正在右键操作的标签页 */
-const selectedTag = ref<TagView>({})
+const selectedTag = ref({})
 
 /** 固定的标签页 */
-let affixTags: TagView[] = []
+let affixTags = []
 
 /** 判断标签页是否激活 */
-function isActive(tag: TagView) {
+function isActive(tag) {
   return tag.path === route.path
 }
 
 /** 判断标签页是否固定 */
-function isAffix(tag: TagView) {
+function isAffix(tag) {
   return tag.meta?.affix
 }
 
 /** 筛选出固定标签页 */
-function filterAffixTags(routes: RouteRecordRaw[], basePath = "/") {
-  const tags: TagView[] = []
+function filterAffixTags(routes, basePath = "/") {
+  const tags = []
   routes.forEach((route) => {
     if (isAffix(route)) {
       const tagPath = path.resolve(basePath, route.path)
@@ -77,7 +75,7 @@ function initTags() {
 }
 
 /** 添加标签页 */
-function addTags(route: RouteLocationNormalizedGeneric) {
+function addTags(route) {
   if (route.name) {
     tagsViewStore.addVisitedView(route)
     tagsViewStore.addCachedView(route)
@@ -85,13 +83,13 @@ function addTags(route: RouteLocationNormalizedGeneric) {
 }
 
 /** 刷新当前正在右键操作的标签页 */
-function refreshSelectedTag(view: TagView) {
+function refreshSelectedTag(view) {
   tagsViewStore.delCachedView(view)
   router.replace({ path: `/redirect${view.path}`, query: view.query })
 }
 
 /** 关闭当前正在右键操作的标签页 */
-function closeSelectedTag(view: TagView) {
+function closeSelectedTag(view) {
   tagsViewStore.delVisitedView(view)
   tagsViewStore.delCachedView(view)
   isActive(view) && toLastView(tagsViewStore.visitedViews, view)
@@ -108,7 +106,7 @@ function closeOthersTags() {
 }
 
 /** 关闭所有标签页 */
-function closeAllTags(view: TagView) {
+function closeAllTags(view) {
   tagsViewStore.delAllVisitedViews()
   tagsViewStore.delAllCachedViews()
   if (affixTags.some(tag => tag.path === route.path)) return
@@ -116,7 +114,7 @@ function closeAllTags(view: TagView) {
 }
 
 /** 跳转到最后一个标签页 */
-function toLastView(visitedViews: TagView[], view: TagView) {
+function toLastView(visitedViews, view) {
   const latestView = visitedViews.slice(-1)[0]
   const fullPath = latestView?.fullPath
   if (fullPath !== undefined) {
@@ -133,7 +131,7 @@ function toLastView(visitedViews: TagView[], view: TagView) {
 }
 
 /** 打开右键菜单面板 */
-function openMenu(tag: TagView, e: MouseEvent) {
+function openMenu(tag, e) {
   const menuMinWidth = 100
   // 当前页面宽度
   const offsetWidth = document.body.offsetWidth

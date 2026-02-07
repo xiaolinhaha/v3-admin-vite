@@ -11,6 +11,17 @@ import { defineConfig, loadEnv } from "vite"
 import { VueMcp } from "vite-plugin-vue-mcp"
 import svgLoader from "vite-svg-loader"
 
+const proxyConfigure = (proxy: any, _options: any) => {
+  proxy.on("proxyRes", (proxyRes: any, _req: any, _res: any) => {
+    const cookies = proxyRes.headers["set-cookie"]
+    if (cookies) {
+      proxyRes.headers["set-cookie"] = cookies.map((cookie: any) => {
+        return cookie.replace(/; secure/gi, "").replace(/; SameSite=None/gi, "")
+      })
+    }
+  })
+}
+
 // Configuring Vite: https://cn.vite.dev/config
 export default defineConfig(({ mode }) => {
   const { VITE_PUBLIC_PATH } = loadEnv(mode, process.cwd(), "") as ImportMetaEnv
@@ -44,24 +55,113 @@ export default defineConfig(({ mode }) => {
           // 是否允许跨域
           changeOrigin: true
         },
-        "/iopApiAdmin": {
-          target: "https://malla.leagpoint.com",
+        "/iopApiAdmin/nebula": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.152.7.38:8762", // 位士
+          target: "https://malla.leagpoint.com", // 测试环境
           changeOrigin: true,
-          secure: false, // Allow self-signed certs if needed
-          cookieDomainRewrite: {
-            "*": "" // Rewrite all cookie domains to current domain (localhost)
-          },
-          configure: (proxy, _options) => {
-            proxy.on("proxyRes", (proxyRes, _req, _res) => {
-              // Ensure cookies are not secure so they can be set on localhost http
-              const cookies = proxyRes.headers["set-cookie"]
-              if (cookies) {
-                proxyRes.headers["set-cookie"] = cookies.map((cookie) => {
-                  return cookie.replace(/; secure/gi, "").replace(/; SameSite=None/gi, "")
-                })
-              }
-            })
-          }
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/iop": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.152.7.89:8762",  //龙建军
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/ieport": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.6.22:8762",
+          // target: "http://localhost:8762",
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/record": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.7.26:8762", // 测试
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/rule": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.152.6.50:8762",  //kangkang
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.6.22:8762",
+          // target: "http://10.192.247.76:8762",
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/api": {
+          // target: "http://10.152.5.143:8762",  //swagger 路劲替换免登录
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.6.65:8762",  //龙建军
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/bot": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.192.247.76:8762",
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/iopApiAdmin/open": {
+          // target: "http://10.188.44.153:8762", // 测试
+          // target: "http://10.152.7.89:8762",  //龙建军
+          // target: "http://10.152.6.195:8762",  //成
+          // target: "http://10.192.247.76:8762",
+          target: "https://malla.leagpoint.com", // 测试
+          changeOrigin: true,
+          secure: false,
+          cookieDomainRewrite: { "*": "" },
+          configure: proxyConfigure
+        },
+        "/upload": {
+          target: "http://10.152.143.75:49212",
+          changeOrigin: true
+        },
+        "/robot/download": {
+          target: "http://10.152.143.75:49212",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/robot\/download/, "/download")
+        },
+        "/robot/train": {
+          target: "http://10.152.143.75:49211",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/robot\/train/, "/lgbm/train")
+        },
+        "/robot/predict": {
+          target: "http://10.152.143.75:49211",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/robot\/predict/, "/lgbm/predict")
         }
       },
       // 是否允许跨域
@@ -99,7 +199,7 @@ export default defineConfig(({ mode }) => {
     },
     // 混淆器
     esbuild:
-      mode === "development"
+      mode === "development" || mode === "test"
         ? undefined
         : {
             // 打包构建时移除 console.log

@@ -181,12 +181,6 @@ async function getStopTaskMaxNum() {
 
 async function getLabels() {
   const selectedBizType = info.bizType || sessionStorage.getItem("biztype")
-  // let paramsLabel = {
-  //   bizType: selectedBizType,
-  //   labelGroup: 'HUMAN_LABEL',
-  //   cur: 1,
-  //   size: 10,
-  // }
   if (selectedBizType) {
     const paramsLabel = {
       bizType: selectedBizType,
@@ -379,7 +373,6 @@ function removeConversation(id) {
 }
 
 function changeBtnStatus(id) {
-  console.log("changeBtnStatus ----->>>>", id)
   btnStatus.value = id || ''
 }
 

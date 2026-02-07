@@ -1,18 +1,7 @@
-<script lang="ts" setup>
+<script setup>
 import screenfull from "screenfull"
 
-interface Props {
-  /** 全屏的元素，默认是 html */
-  element?: string
-  /** 打开全屏提示语 */
-  openTips?: string
-  /** 关闭全屏提示语 */
-  exitTips?: string
-  /** 是否只针对内容区 */
-  content?: boolean
-}
-
-const { element = "html", openTips = "全屏", exitTips = "退出全屏", content = false } = defineProps<Props>()
+const { element = "html", openTips = "全屏", exitTips = "退出全屏", content = false } = defineProps()
 
 const CONTENT_LARGE = "content-large"
 
@@ -23,7 +12,7 @@ const classList = document.body.classList
 // #region 全屏
 const isEnabled = screenfull.isEnabled
 
-const isFullscreen = ref<boolean>(false)
+const isFullscreen = ref(false)
 
 const fullscreenTips = computed(() => (isFullscreen.value ? exitTips : openTips))
 
@@ -53,7 +42,7 @@ watchEffect(() => {
 // #endregion
 
 // #region 内容区
-const isContentLarge = ref<boolean>(false)
+const isContentLarge = ref(false)
 
 const contentLargeTips = computed(() => (isContentLarge.value ? "内容区复原" : "内容区放大"))
 

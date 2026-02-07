@@ -10,8 +10,7 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onUnmounted } from 'vue'
 import { useOwl } from './composables/useOwl'
 import { ElMessage } from 'element-plus'
@@ -20,24 +19,24 @@ const emit = defineEmits(['hangup', 'changeSuccess', 'changeLogOut', 'rtcHangUp'
 
 const { globalOwlInfo, globalCallInfo, mutations } = useOwl()
 
-const localRender = ref<HTMLAudioElement | null>(null)
-const remoteRender = ref<HTMLAudioElement | null>(null)
+const localRender = ref(null)
+const remoteRender = ref(null)
 
 const localVolumeLevel = ref(2)
 const remoteVolumeLevel = ref(2)
 
-let localAudioContext: AudioContext | null = null
-let localAnalyser: AnalyserNode | null = null
-let localDataArray: Uint8Array | null = null
-let sourceLocal: MediaStreamAudioSourceNode | null = null
+let localAudioContext = null
+let localAnalyser = null
+let localDataArray = null
+let sourceLocal = null
 
-let remoteAudioContext: AudioContext | null = null
-let remoteAnalyser: AnalyserNode | null = null
-let remoteDataArray: Uint8Array | null = null
-let sourceRemote: MediaStreamAudioSourceNode | null = null
+let remoteAudioContext = null
+let remoteAnalyser = null
+let remoteDataArray = null
+let sourceRemote = null
 
-let requestAnimationFrameId: number | null = null
-let client: any = null
+let requestAnimationFrameId = null
+let client = null
 
 // Expose methods to parent
 defineExpose({
@@ -49,7 +48,7 @@ defineExpose({
 })
 
 function initWebRtc() {
-  const SipCall = (window as any).SipCall
+  const SipCall = window.SipCall
   if (!SipCall) {
     ElMessage.error('软电话组件未加载')
     return
@@ -91,56 +90,56 @@ function initWebRtc() {
   client.id = 'f6b502f3-f396-47d8-b587-c509de8ee494'
 
   // Events
-  client.addEventListener('call-start', (event: any) => {
+  client.addEventListener('call-start', (event) => {
     console.log('webrtc:call-start:', event.info)
     // showVolume(); //开始分析音量
   })
 
-  client.addEventListener('call-error', (event: any) => {
+  client.addEventListener('call-error', (event) => {
     console.log('webrtc:call-error:', event.info)
     stopShowVolume() //停止分析音量
   })
 
-  client.addEventListener('call-end', (event: any) => {
+  client.addEventListener('call-end', (event) => {
     console.log('webrtc:call-end:', event.info)
     ElMessage.success('挂断成功')
   })
 
-  client.addEventListener('incoming-call', (event: any) => {
+  client.addEventListener('incoming-call', (event) => {
     console.log('webrtc:incoming-call:', event.info)
     client
       .answer(event.info.callId)
       .then(() => {
         console.log('answer success')
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.log('answer fail:', err)
       })
   })
 
-  client.addEventListener('incoming-call-cancelled', (event: any) => {
+  client.addEventListener('incoming-call-cancelled', (event) => {
     console.log('webrtc:incoming-call-cancelled:', event.info)
   })
 
-  client.addEventListener('call-reject', (event: any) => {
+  client.addEventListener('call-reject', (event) => {
     console.log('webrtc:call-reject:', event.info)
   })
 
-  client.addEventListener('registered-ok', (event: any) => {
+  client.addEventListener('registered-ok', (event) => {
     emit('changeSuccess')
     console.log('webrtc:registered-ok:', event.info)
   })
 
-  client.addEventListener('registered-failed', (event: any) => {
+  client.addEventListener('registered-failed', (event) => {
     ElMessage.error('软登录失败，请重试登录')
     console.log('webrtc:registered-failed:', event.info)
   })
 
-  client.addEventListener('dtmf', (event: any) => {
+  client.addEventListener('dtmf', (event) => {
     console.log('webrtc:dtmf:', event.info)
   })
 
-  client.addEventListener('server-disconnected', (event: any) => {
+  client.addEventListener('server-disconnected', (event) => {
     console.log('webrtc:server-disconnected:', event)
   })
 
@@ -150,7 +149,7 @@ function initWebRtc() {
     .then(() => {
       console.log('register success', window.location)
     })
-    .catch((err: any) => {
+    .catch((err) => {
       console.log('register failed:', err)
       ElMessage.error('软登录失败，请重试登录')
       emit('changeLogOut')
@@ -181,7 +180,7 @@ function emitUnregister() {
 
 
 async function showVolume() {
-  const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext
   if (!localAudioContext || localAudioContext.state === 'closed') {
     localAudioContext = new AudioContextClass()
   }
@@ -189,13 +188,13 @@ async function showVolume() {
     await localAudioContext.resume()
   }
   if (localRender.value && localRender.value.srcObject) {
-      sourceLocal = localAudioContext!.createMediaStreamSource(localRender.value.srcObject as MediaStream)
-      localAnalyser = localAudioContext!.createAnalyser()
+      sourceLocal = localAudioContext.createMediaStreamSource(localRender.value.srcObject)
+      localAnalyser = localAudioContext.createAnalyser()
       localAnalyser.fftSize = 256
       localDataArray = new Uint8Array(localAnalyser.frequencyBinCount)
 
       sourceLocal.connect(localAnalyser)
-      localAnalyser.connect(localAudioContext!.destination)
+      localAnalyser.connect(localAudioContext.destination)
   }
 
 
@@ -207,13 +206,13 @@ async function showVolume() {
   }
   
   if (remoteRender.value && remoteRender.value.srcObject) {
-      sourceRemote = remoteAudioContext!.createMediaStreamSource(remoteRender.value.srcObject as MediaStream)
-      remoteAnalyser = remoteAudioContext!.createAnalyser()
+      sourceRemote = remoteAudioContext.createMediaStreamSource(remoteRender.value.srcObject)
+      remoteAnalyser = remoteAudioContext.createAnalyser()
       remoteAnalyser.fftSize = 256
       remoteDataArray = new Uint8Array(remoteAnalyser.frequencyBinCount)
 
       sourceRemote.connect(remoteAnalyser)
-      remoteAnalyser.connect(remoteAudioContext!.destination)
+      remoteAnalyser.connect(remoteAudioContext.destination)
   }
 
   updateVolume()

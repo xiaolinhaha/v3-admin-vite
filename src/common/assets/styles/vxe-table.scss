@@ -10,18 +10,23 @@
   }
 
   // 工具栏
-  &--toolbar-wrapper {
-    .vxe-toolbar {
-      padding: 20px;
-    }
-  }
+  // &--toolbar-wrapper {
+  //   .vxe-toolbar {
+  //     padding: 8px;
+  //   }
+  // }
 
   // 分页
   &--pager-wrapper {
     .vxe-pager {
-      height: 70px;
-      padding: 0 20px;
+      height: auto;
+      padding: 8px 0;
+
       &--wrapper {
+        display: flex;
+        align-items: center;
+        width: 100%;
+
         // 参考 Bootstrap 的响应式设计 WIDTH = 768
         @media screen and (max-width: 768px) {
           .vxe-pager--total,
@@ -32,6 +37,10 @@
             display: none;
           }
         }
+      }
+
+      &--total {
+        margin-right: auto;
       }
     }
   }
