@@ -85,7 +85,8 @@ function addTags(route) {
 /** 刷新当前正在右键操作的标签页 */
 function refreshSelectedTag(view) {
   tagsViewStore.delCachedView(view)
-  router.replace({ path: `/redirect${view.path}`, query: view.query })
+  const fullPath = view.fullPath || view.path
+  router.replace({ path: `/redirect${fullPath}` })
 }
 
 /** 关闭当前正在右键操作的标签页 */

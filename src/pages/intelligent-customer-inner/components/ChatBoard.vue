@@ -159,7 +159,7 @@ import ChatPanel from "./ChatPanel.vue";
 import OwlPhone from "../OwlPhoneComponent.vue";
 import { useOwl } from "../composables/useOwl";
 import { ElMessage as message } from "element-plus";
-import { updateUserLineNum } from '../apis';
+import { updateUserLineNum } from '@/common/apis/intelligent-customer-inner';
 
 const props = defineProps({
    conversations: { type: Array, default: () => [] },

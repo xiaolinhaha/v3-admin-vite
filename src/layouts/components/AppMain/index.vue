@@ -15,9 +15,7 @@ const settingsStore = useSettingsStore()
       <router-view v-slot="{ Component, route }">
         <transition name="el-fade-in" mode="out-in">
             <keep-alive :include="tagsViewStore.cachedViews">
-            <div class="app-container-grow">
-               <component :is="Component" :key="route.path" />
-            </div>
+            <component :is="Component" :key="route.path" class="app-container-grow" />
           </keep-alive>
         </transition>
       </router-view>

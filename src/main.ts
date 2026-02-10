@@ -1,5 +1,3 @@
-/* eslint-disable perfectionist/sort-imports */
-
 // core
 import { pinia } from "@/pinia"
 import { router } from "@/router"

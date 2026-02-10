@@ -1,6 +1,6 @@
 import { reactive, ref, computed, watch, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { callbackSeat } from '../apis'
+import { callbackSeat } from '@@/apis/intelligent-customer-inner'
 
 // --- Interfaces ---
 

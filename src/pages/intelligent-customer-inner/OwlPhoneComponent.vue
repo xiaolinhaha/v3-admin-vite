@@ -19,7 +19,7 @@
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useOwl } from './composables/useOwl'
 import Webrtc from './WebRtc.vue'
-import { getCurrentUserAgent } from './apis'
+import { getCurrentUserAgent } from '@/common/apis/intelligent-customer-inner'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const emit = defineEmits(['rtcHangUp', 'login'])

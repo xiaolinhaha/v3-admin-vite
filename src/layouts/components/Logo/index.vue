@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import logoText1 from "@@/assets/images/layouts/logo-text-1.png?url"
+import logoText1 from "@@/assets/images/layouts/iopLogo4.png?url"
 import logoText2 from "@@/assets/images/layouts/logo-text-2.png?url"
 import logo from "@@/assets/images/layouts/logo.png?url"
 import { useLayoutMode } from "@@/composables/useLayoutMode"
@@ -20,7 +20,7 @@ const { isLeft, isTop } = useLayoutMode()
         <img :src="logo" class="layout-logo">
       </router-link>
       <router-link v-else key="expand" to="/">
-        <img :src="!isLeft ? logoText2 : logoText1" class="layout-logo-text">
+        <img :src="logoText1" class="layout-logo-text">
       </router-link>
     </transition>
   </div>
@@ -38,7 +38,7 @@ const { isLeft, isTop } = useLayoutMode()
     display: none;
   }
   .layout-logo-text {
-    height: 100%;
+    width: 100%;
     vertical-align: middle;
   }
 }

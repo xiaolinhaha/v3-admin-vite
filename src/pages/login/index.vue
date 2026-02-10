@@ -7,7 +7,7 @@ import { onMounted, onUnmounted, reactive, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { useSettingsStore } from "@/pinia/stores/settings"
 import { useUserStore } from "@/pinia/stores/user"
-import { getMessageCodeApi, getVerifyCodeApi, loginApi } from "./apis"
+import { getMessageCodeApi, getVerifyCodeApi, loginApi } from "@/common/apis/login"
 import Owl from "./components/Owl.vue"
 import { useFocus } from "./composables/useFocus"
 
@@ -181,7 +181,7 @@ onUnmounted(() => {
 <template>
   <div class="login-container">
     <ThemeSwitch v-if="settingsStore.showThemeSwitch" class="theme-switch" />
-    <Owl :close-eyes="isFocus" />
+    <!-- <Owl :close-eyes="isFocus" /> -->
     <div class="login-card">
       <div class="title">
         <img src="@@/assets/images/layouts/iopLogo2.png">
@@ -256,9 +256,10 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   width: 100%;
   min-height: 100%;
+  padding-right: 40px;
   .theme-switch {
     position: fixed;
     top: 5%;

@@ -219,7 +219,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { colJson, HCSColJson, HCSSectionOptions, defaultSectionOptions } from '../config'
 import { useOwl } from '../composables/useOwl'
-import { updateLabel, referSeat, listenSeat } from '../apis'
+import { updateLabel, referSeat, listenSeat } from '@/common/apis/intelligent-customer-inner'
 
 const props = defineProps({
   conversation: {

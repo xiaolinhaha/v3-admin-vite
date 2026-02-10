@@ -47,18 +47,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: "/intelligent-customer-inner",
-    component: () => import("@/pages/intelligent-customer-inner/index.vue"),
-    name: "IntelligentCustomerInner",
-    meta: {
-      title: "智能客服",
-      elIcon: "Service",
-      target: "_blank",
-      openMode: "window",
-      withToken: true
-    }
-  },
-  {
     path: "/",
     component: Layouts,
     redirect: "/dashboard",
@@ -75,6 +63,18 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+    {
+    path: "/intelligent-customer-inner",
+    component: () => import("@/pages/intelligent-customer-inner/index.vue"),
+    name: "IntelligentCustomerInner",
+    meta: {
+      title: "中台AI外呼工作台",
+      elIcon: "Service",
+      target: "_blank",
+      openMode: "window",
+      withToken: true
+    }
+  },
   {
     path: "/system",
     component: Layouts,
@@ -82,7 +82,8 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: "System",
     meta: {
       title: "系统管理",
-      elIcon: "Setting"
+      elIcon: "Setting",
+      alwaysShow: true
     },
     children: [
       {
@@ -93,6 +94,28 @@ export const constantRoutes: RouteRecordRaw[] = [
           title: "用户管理"
         }
       }
+    ]
+  },
+    {
+    path: "/intelligent",
+    component: Layouts,
+    redirect: "/intelligent",
+    name: "intelligent",
+    meta: {
+      title: "智慧职场",
+      elIcon: "Setting",
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: "/intelligentCustomerInner",
+        component: () => import("@/pages/intelligent-customer-inner/index.vue"),
+        name: "IntelligentCustomerInnerDemo",
+        meta: {
+          title: "AI外呼工作台",
+          keepAlive: true
+        }
+      },
     ]
   },
   {
@@ -128,15 +151,6 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: "VxeTable",
         meta: {
           title: "Vxe Table",
-          keepAlive: true
-        }
-      },
-      {
-        path: "/intelligentCustomerInner",
-        component: () => import("@/pages/intelligent-customer-inner/index.vue"),
-        name: "IntelligentCustomerInnerDemo",
-        meta: {
-          title: "智慧职场",
           keepAlive: true
         }
       },
@@ -197,6 +211,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       }
     ]
   },
+
   {
     path: "/link",
     meta: {

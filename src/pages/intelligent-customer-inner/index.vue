@@ -42,8 +42,7 @@ import {
   closeSse, 
   getLabels as apiGetLabels,
   getSseToken as apiGetSseToken,
-} from './apis'
-import axios from 'axios'
+} from '@/common/apis/intelligent-customer-inner'
 
 // --- State ---
 const summary = ref({
@@ -589,7 +588,7 @@ watch(clearStatusHangOut, (val) => {
   display: flex;
   flex-direction: column;
   /* 移除固定视口高度，改为自适应内容高度 */
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   width: 100%;
   max-width: 100%;

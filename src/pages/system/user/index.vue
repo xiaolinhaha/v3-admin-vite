@@ -2,7 +2,7 @@
 import { reactive, ref, onMounted, computed } from "vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { Plus, Delete, More, Document, Timer, User, Edit, Lock, Unlock, Key } from "@element-plus/icons-vue"
-import { userApi } from "@/api/system/user"
+import { userApi } from "@/common/apis/system/user"
 import SearchTablePage from "@/pages/components/SearchTablePage.vue"
 import sm2 from "sm-crypto"
 
@@ -433,6 +433,7 @@ const submitRoleEvent = async () => {
 </script>
 
 <template>
+  <div class="user-management-page">
   <SearchTablePage
     ref="searchTableRef"
     :search-form="searchForm"
@@ -646,6 +647,7 @@ const submitRoleEvent = async () => {
       </div>
     </template>
   </vxe-modal>
+  </div>
 </template>
 
 <style>
