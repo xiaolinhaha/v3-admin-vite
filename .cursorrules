@@ -138,12 +138,12 @@ You MUST use:
 script setup
 
 You are FORBIDDEN from using:
-<script setup lang="ts"></script>
+script setup lang="ts"
 
-Do NOT specify a language attribute when using <script setup></script>.
+Do NOT specify a language attribute when using <script setup>.
 
 Chinese explanation:
-创建页面或组件时，统一使用 script setup，禁止使用 <script setup lang="ts"></script> 。
+创建页面或组件时，统一使用 script setup，禁止使用 script setup lang="ts"。
 
 --------------------------------
 

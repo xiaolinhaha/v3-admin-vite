@@ -93,6 +93,14 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: {
           title: "用户管理"
         }
+      },
+      {
+        path: "menu",
+        component: () => import("@/pages/system/menu/index.vue"),
+        name: "MenuManagement",
+        meta: {
+          title: "菜单管理"
+        }
       }
     ]
   },
