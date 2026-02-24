@@ -434,219 +434,219 @@ const submitRoleEvent = async () => {
 
 <template>
   <div class="user-management-page">
-  <SearchTablePage
-    ref="searchTableRef"
-    :search-form="searchForm"
-    :grid-options="xGridOpt"
-    :grid-events="gridEvents"
-    @reset="resetEvent"
-    @search="searchEvent"
-  >
-    <template #search-content="{ isExpand }">
-      <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
-        <el-form-item label="用户名" class="w-full">
-          <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable @keyup.enter="searchEvent" />
-        </el-form-item>
-      </el-col>
-      <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-show="isExpand">
-        <el-form-item label="用户昵称" class="w-full">
-          <el-input v-model="searchForm.userNickname" placeholder="请输入用户昵称" clearable @keyup.enter="searchEvent" />
-        </el-form-item>
-      </el-col>
-      <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-show="isExpand">
-        <el-form-item label="所属部门" class="w-full">
-          <el-cascader
-            v-model="searchForm.deptId"
-            :options="deptOptions"
-            :props="{ checkStrictly: true, emitPath: false }"
-            clearable
-            filterable
-            placeholder="请选择部门"
-            style="width: 100%"
+    <SearchTablePage
+      ref="searchTableRef"
+      :search-form="searchForm"
+      :grid-options="xGridOpt"
+      :grid-events="gridEvents"
+      @reset="resetEvent"
+      @search="searchEvent"
+    >
+      <template #search-content="{ isExpand }">
+        <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+          <el-form-item label="用户名" class="w-full">
+            <el-input v-model="searchForm.userName" placeholder="请输入用户名" clearable @keyup.enter="searchEvent" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-show="isExpand">
+          <el-form-item label="用户昵称" class="w-full">
+            <el-input v-model="searchForm.userNickname" placeholder="请输入用户昵称" clearable @keyup.enter="searchEvent" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="6" :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-show="isExpand">
+          <el-form-item label="所属部门" class="w-full">
+            <el-cascader
+              v-model="searchForm.deptId"
+              :options="deptOptions"
+              :props="{ checkStrictly: true, emitPath: false }"
+              clearable
+              filterable
+              placeholder="请选择部门"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </el-col>
+      </template>
+
+      <template #toolbar_buttons>
+        <el-button type="primary" :icon="Plus" @click="insertEvent">新增</el-button>
+        <el-button type="danger" :icon="Delete" @click="batchDeleteEvent">删除</el-button>
+      </template>
+
+      <template #status_default="{ row }">
+        <el-tag v-if="row.userStatus === 'normal'" type="success">正常</el-tag>
+        <el-tag v-else-if="row.userStatus === 'freeze'" type="warning">冻结</el-tag>
+        <el-tag v-else-if="row.userStatus === 'del'" type="danger">删除</el-tag>
+      </template>
+
+      <template #isAccess_default="{ row }">
+        <span>{{ row.isAccess == 0 ? '允许' : '不允许' }}</span>
+      </template>
+
+      <template #operate="{ row }">
+        <el-tooltip content="登录日志" placement="top">
+          <el-button link type="primary" :icon="Document" @click="showLoginLogEvent(row)"></el-button>
+        </el-tooltip>
+        <el-tooltip content="设置访问" placement="top">
+          <el-button link type="primary" :icon="Timer" @click="showAccessEvent(row)"></el-button>
+        </el-tooltip>
+        <el-tooltip content="分配角色" placement="top">
+          <el-button link type="info" :icon="User" @click="assignRoleEvent(row)"></el-button>
+        </el-tooltip>
+        <el-tooltip content="修改用户" placement="top">
+          <el-button link type="primary" :icon="Edit" @click="editEvent(row)"></el-button>
+        </el-tooltip>
+        <el-tooltip content="删除用户" placement="top">
+          <el-button link type="danger" :icon="Delete" @click="removeEvent(row)"></el-button>
+        </el-tooltip>
+        <el-dropdown @command="handleCommand" trigger="click">
+          <span class="el-dropdown-link">
+            <el-tooltip content="更多操作" placement="top">
+              <el-button link type="primary" :icon="More" style="margin-left: 12px"></el-button>
+            </el-tooltip>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item :command="{ type: 'reset', row }">
+                <el-icon><Key /></el-icon>重置密码
+              </el-dropdown-item>
+              <el-dropdown-item :command="{ type: 'lock', row }">
+                <el-icon><Lock /></el-icon>锁定
+              </el-dropdown-item>
+              <el-dropdown-item :command="{ type: 'unlock', row }">
+                <el-icon><Unlock /></el-icon>解锁
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </template>
+    </SearchTablePage>
+
+    <!-- Login Log Modal -->
+    <vxe-modal v-model="showLoginLogModal" title="登录日志" width="800" destroy-on-close :z-index="3000">
+      <template #default>
+        <div style="padding: 20px">
+          <vxe-table :data="loginLogList" height="400" border stripe>
+            <vxe-column field="userNickName" title="昵称" width="100" />
+            <vxe-column field="userName" title="登录名" width="100" />
+            <vxe-column field="orgCode" title="所属机构" />
+            <vxe-column field="userPhone" title="手机号" />
+            <vxe-column field="allowChannel" title="访问渠道" />
+            <vxe-column field="allowIp" title="访问IP" width="150" />
+            <vxe-column field="accessReason" title="访问原因" />
+            <vxe-column field="accessStartTime" title="授权开始时间" width="160" />
+            <vxe-column field="accessEndTime" title="授权结束时间" width="160" />
+            <vxe-column field="loginTime" title="实际登录时间" width="160" />
+          </vxe-table>
+          <vxe-pager
+            v-model:current-page="loginLogPage.pageNum"
+            v-model:page-size="loginLogPage.pageSize"
+            :total="loginLogTotal"
+            :page-sizes="[10, 20, 50, 100]"
+            @page-change="({ currentPage, pageSize }) => { loginLogPage.pageNum = currentPage; loginLogPage.pageSize = pageSize; fetchLoginLog() }"
           />
-        </el-form-item>
-      </el-col>
-    </template>
-
-    <template #toolbar_buttons>
-      <el-button type="primary" :icon="Plus" @click="insertEvent">新增</el-button>
-      <el-button type="danger" :icon="Delete" @click="batchDeleteEvent">删除</el-button>
-    </template>
-
-    <template #status_default="{ row }">
-      <el-tag v-if="row.userStatus === 'normal'" type="success">正常</el-tag>
-      <el-tag v-else-if="row.userStatus === 'freeze'" type="warning">冻结</el-tag>
-      <el-tag v-else-if="row.userStatus === 'del'" type="danger">删除</el-tag>
-    </template>
-
-    <template #isAccess_default="{ row }">
-      <span>{{ row.isAccess == 0 ? '允许' : '不允许' }}</span>
-    </template>
-
-    <template #operate="{ row }">
-      <el-tooltip content="登录日志" placement="top">
-        <el-button link type="primary" :icon="Document" @click="showLoginLogEvent(row)"></el-button>
-      </el-tooltip>
-      <el-tooltip content="设置访问" placement="top">
-        <el-button link type="primary" :icon="Timer" @click="showAccessEvent(row)"></el-button>
-      </el-tooltip>
-      <el-tooltip content="分配角色" placement="top">
-        <el-button link type="info" :icon="User" @click="assignRoleEvent(row)"></el-button>
-      </el-tooltip>
-      <el-tooltip content="修改用户" placement="top">
-        <el-button link type="primary" :icon="Edit" @click="editEvent(row)"></el-button>
-      </el-tooltip>
-      <el-tooltip content="删除用户" placement="top">
-        <el-button link type="danger" :icon="Delete" @click="removeEvent(row)"></el-button>
-      </el-tooltip>
-      <el-dropdown @command="handleCommand" trigger="click">
-        <span class="el-dropdown-link">
-          <el-tooltip content="更多操作" placement="top">
-            <el-button link type="primary" :icon="More" style="margin-left: 12px"></el-button>
-          </el-tooltip>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item :command="{ type: 'reset', row }">
-              <el-icon><Key /></el-icon>重置密码
-            </el-dropdown-item>
-            <el-dropdown-item :command="{ type: 'lock', row }">
-              <el-icon><Lock /></el-icon>锁定
-            </el-dropdown-item>
-            <el-dropdown-item :command="{ type: 'unlock', row }">
-              <el-icon><Unlock /></el-icon>解锁
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </template>
-  </SearchTablePage>
-
-  <!-- Login Log Modal -->
-  <vxe-modal v-model="showLoginLogModal" title="登录日志" width="800" destroy-on-close :z-index="3000">
-    <template #default>
-      <div style="padding: 20px">
-        <vxe-table :data="loginLogList" height="400" border stripe>
-          <vxe-column field="userNickName" title="昵称" width="100" />
-          <vxe-column field="userName" title="登录名" width="100" />
-          <vxe-column field="orgCode" title="所属机构" />
-          <vxe-column field="userPhone" title="手机号" />
-          <vxe-column field="allowChannel" title="访问渠道" />
-          <vxe-column field="allowIp" title="访问IP" width="150" />
-          <vxe-column field="accessReason" title="访问原因" />
-          <vxe-column field="accessStartTime" title="授权开始时间" width="160" />
-          <vxe-column field="accessEndTime" title="授权结束时间" width="160" />
-          <vxe-column field="loginTime" title="实际登录时间" width="160" />
-        </vxe-table>
-        <vxe-pager
-          v-model:current-page="loginLogPage.pageNum"
-          v-model:page-size="loginLogPage.pageSize"
-          :total="loginLogTotal"
-          :page-sizes="[10, 20, 50, 100]"
-          @page-change="({ currentPage, pageSize }) => { loginLogPage.pageNum = currentPage; loginLogPage.pageSize = pageSize; fetchLoginLog() }"
-        />
-      </div>
-    </template>
-  </vxe-modal>
-
-  <!-- Access Setting Modal -->
-  <vxe-modal v-model="showAccessModal" title="设置访问" width="500" destroy-on-close :z-index="3000">
-    <template #default>
-      <el-form :model="accessForm" label-width="100px" style="padding: 20px">
-        <el-form-item label="访问开始时间">
-          <el-time-picker v-model="accessForm.startTime" value-format="HH:mm:ss" placeholder="选择时间" style="width: 100%" />
-        </el-form-item>
-        <el-form-item label="访问结束时间">
-          <el-time-picker v-model="accessForm.endTime" value-format="HH:mm:ss" placeholder="选择时间" style="width: 100%" />
-        </el-form-item>
-        <el-form-item label="访问原因">
-          <el-input type="textarea" v-model="accessForm.accessReason" :rows="2" placeholder="请输入访问原因" />
-        </el-form-item>
-        <div style="text-align: right; margin-top: 20px">
-          <el-button @click="showAccessModal = false">取消</el-button>
-          <el-button type="primary" :loading="accessLoading" @click="submitAccessEvent">确定</el-button>
         </div>
-      </el-form>
-    </template>
-  </vxe-modal>
+      </template>
+    </vxe-modal>
 
-  <!-- Edit Modal -->
-  <vxe-modal
-    v-model="showEditModal"
-    :title="modalType === 'add' ? '新增用户' : '编辑用户'"
-    width="600"
-    min-width="400"
-    height="auto"
-    :loading="false"
-    resize
-    destroy-on-close
-    :z-index="3000"
-  >
-    <template #default>
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="formData.userName" :disabled="modalType === 'edit'" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="用户昵称" prop="userNickname">
-          <el-input v-model="formData.userNickname" placeholder="请输入用户昵称" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="modalType === 'add'">
-          <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
-        </el-form-item>
-        <el-form-item label="所属部门" prop="deptId">
-          <el-cascader
-            v-model="formData.deptId"
-            :options="deptOptions"
-            :props="{ checkStrictly: true, emitPath: false }"
-            clearable
-            filterable
-            placeholder="请选择部门"
+    <!-- Access Setting Modal -->
+    <vxe-modal v-model="showAccessModal" title="设置访问" width="500" destroy-on-close :z-index="3000">
+      <template #default>
+        <el-form :model="accessForm" label-width="100px" style="padding: 20px">
+          <el-form-item label="访问开始时间">
+            <el-time-picker v-model="accessForm.startTime" value-format="HH:mm:ss" placeholder="选择时间" style="width: 100%" />
+          </el-form-item>
+          <el-form-item label="访问结束时间">
+            <el-time-picker v-model="accessForm.endTime" value-format="HH:mm:ss" placeholder="选择时间" style="width: 100%" />
+          </el-form-item>
+          <el-form-item label="访问原因">
+            <el-input type="textarea" v-model="accessForm.accessReason" :rows="2" placeholder="请输入访问原因" />
+          </el-form-item>
+          <div style="text-align: right; margin-top: 20px">
+            <el-button @click="showAccessModal = false">取消</el-button>
+            <el-button type="primary" :loading="accessLoading" @click="submitAccessEvent">确定</el-button>
+          </div>
+        </el-form>
+      </template>
+    </vxe-modal>
+
+    <!-- Edit Modal -->
+    <vxe-modal
+      v-model="showEditModal"
+      :title="modalType === 'add' ? '新增用户' : '编辑用户'"
+      width="600"
+      min-width="400"
+      height="auto"
+      :loading="false"
+      resize
+      destroy-on-close
+      :z-index="3000"
+    >
+      <template #default>
+        <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
+          <el-form-item label="用户名" prop="userName">
+            <el-input v-model="formData.userName" :disabled="modalType === 'edit'" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="用户昵称" prop="userNickname">
+            <el-input v-model="formData.userNickname" placeholder="请输入用户昵称" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password" v-if="modalType === 'add'">
+            <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
+          </el-form-item>
+          <el-form-item label="所属部门" prop="deptId">
+            <el-cascader
+              v-model="formData.deptId"
+              :options="deptOptions"
+              :props="{ checkStrictly: true, emitPath: false }"
+              clearable
+              filterable
+              placeholder="请选择部门"
+              style="width: 100%"
+              popper-class="fix-modal-z-index"
+            />
+          </el-form-item>
+          <el-form-item label="手机号" prop="mobile">
+            <el-input v-model="formData.mobile" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-radio-group v-model="formData.status">
+              <el-radio label="1">启用</el-radio>
+              <el-radio label="0">禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <div style="text-align: right">
+            <el-button @click="showEditModal = false">取消</el-button>
+            <el-button type="primary" @click="submitEvent">确定</el-button>
+          </div>
+        </el-form>
+      </template>
+    </vxe-modal>
+
+    <!-- Role Assignment Modal -->
+    <vxe-modal v-model="showRoleModal" title="分配角色" width="500" destroy-on-close :z-index="3000">
+      <template #default>
+        <div>
+          <el-select 
+            v-model="selectedRoleIds" 
+            multiple 
+            placeholder="请选择角色" 
             style="width: 100%"
             popper-class="fix-modal-z-index"
-          />
-        </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="formData.mobile" placeholder="请输入手机号" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="formData.status">
-            <el-radio label="1">启用</el-radio>
-            <el-radio label="0">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <div style="text-align: right">
-          <el-button @click="showEditModal = false">取消</el-button>
-          <el-button type="primary" @click="submitEvent">确定</el-button>
+          >
+            <el-option
+              v-for="item in roleOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <div style="text-align: right; margin-top: 20px">
+            <el-button @click="showRoleModal = false">取消</el-button>
+            <el-button type="primary" @click="submitRoleEvent">确定</el-button>
+          </div>
         </div>
-      </el-form>
-    </template>
-  </vxe-modal>
-
-  <!-- Role Assignment Modal -->
-  <vxe-modal v-model="showRoleModal" title="分配角色" width="500" destroy-on-close :z-index="3000">
-    <template #default>
-      <div>
-         <el-select 
-           v-model="selectedRoleIds" 
-           multiple 
-           placeholder="请选择角色" 
-           style="width: 100%"
-           popper-class="fix-modal-z-index"
-         >
-           <el-option
-             v-for="item in roleOptions"
-             :key="item.value"
-             :label="item.label"
-             :value="item.value"
-           />
-         </el-select>
-         <div style="text-align: right; margin-top: 20px">
-           <el-button @click="showRoleModal = false">取消</el-button>
-           <el-button type="primary" @click="submitRoleEvent">确定</el-button>
-         </div>
-      </div>
-    </template>
-  </vxe-modal>
+      </template>
+    </vxe-modal>
   </div>
 </template>
 

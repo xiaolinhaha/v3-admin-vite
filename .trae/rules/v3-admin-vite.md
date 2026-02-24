@@ -170,6 +170,36 @@ Chinese explanation:
 - 禁止在非表格场景使用 vxe-table
 - 禁止混用其他 UI 库
 
+--------------------------------
+
+10. Chinese Comments Rule (MANDATORY)
+
+When writing code comments or generating documentation:
+
+- You MUST use Chinese for all comments and explanations.
+- The comments should be semantic and meaningful.
+
+You are FORBIDDEN from:
+- Using English for comments (unless it's a technical term that is better expressed in English).
+- Writing meaningless or redundant comments.
+
+Chinese explanation:
+生成代码时，注释和文档说明必须使用中文，且要语义化，不要全用英文。
+
+11. List Page Component Rule (MANDATORY)
+
+When creating a list page (with search, table, pagination):
+
+- You MUST use the encapsulated component: `src/pages/components/SearchTablePage.vue`.
+- The search form and other non-table UI elements MUST use Element Plus.
+- Do NOT use `vxe-table` or `vxe-grid` directly in the page template; pass configuration to `SearchTablePage`.
+- Do NOT use vxe-UI components (like vxe-form, vxe-button) for the page layout.
+
+Chinese explanation:
+列表类型的页面必须使用 `src/pages/components/SearchTablePage.vue` 组件。
+该组件已封装了布局，搜索栏和按钮等必须使用 Element Plus。
+禁止在页面模板中直接写 `vxe-table` 标签（应通过配置传入组件），也禁止使用 vxe 的非表格组件。
+
 ==============================
 END OF RULES
 ==============================
