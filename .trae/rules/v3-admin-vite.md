@@ -135,7 +135,7 @@ PAGE & VUE RULES
 When creating Vue pages or components:
 
 You MUST use:
-script setup
+<script setup></script>
 
 You are FORBIDDEN from using:
 <script setup lang="ts"></script>
@@ -143,7 +143,7 @@ You are FORBIDDEN from using:
 Do NOT specify a language attribute when using <script setup></script>.
 
 Chinese explanation:
-创建页面或组件时，统一使用 script setup，禁止使用 <script setup lang="ts"></script> 。
+创建页面或组件时，统一使用 <script setup></script>，禁止使用 <script setup lang="ts"></script> 。
 
 --------------------------------
 

@@ -1,4 +1,4 @@
-import { getCurrentUserApi } from "@@/apis/users"
+import { userApi } from "@@/apis/system/user"
 import { setToken as _setToken, getToken, removeToken } from "@@/utils/local-storage"
 import { pinia } from "@/pinia"
 import { resetRouter } from "@/router"
@@ -8,13 +8,11 @@ import { useTagsViewStore } from "./tags-view"
 
 export const useUserStore = defineStore("user", () => {
   const token = ref<string>(getToken() || "")
-
   const roles = ref<string[]>([])
-
   const username = ref<string>("")
-
+  const menuList = ref<any[]>([])
+  
   const tagsViewStore = useTagsViewStore()
-
   const settingsStore = useSettingsStore()
 
   // 设置 Token
@@ -25,7 +23,7 @@ export const useUserStore = defineStore("user", () => {
 
   // 获取用户详情
   const getInfo = async () => {
-    // 兼容逻辑：如果 sessionStorage 中有用户信息，直接使用，不再调用接口
+    // 兼容逻辑：如果 sessionStorage 中有用户信息，直接使用
     const userInfoStr = sessionStorage.getItem("userInfo")
     if (userInfoStr) {
       try {
@@ -33,19 +31,26 @@ export const useUserStore = defineStore("user", () => {
         username.value = userInfo.username || sessionStorage.getItem("userName") || "admin"
         // 确保 roles 存在，否则给默认值
         roles.value = routerConfig.defaultRoles
-        return
       } catch (e) {
         console.error("解析用户信息失败", e)
       }
+    } else {
+        username.value = sessionStorage.getItem("userName") || "admin"
+        roles.value = routerConfig.defaultRoles
     }
-    // 原有逻辑保留作为兜底，但在当前迁移场景下可能不会走到这里，或者应该注释掉
-    // const { data } = await getCurrentUserApi()
-    // username.value = data.username
-    // roles.value = data.roles?.length > 0 ? data.roles : routerConfig.defaultRoles
 
-    // 强制给一个默认角色，避免无限循环
-    username.value = sessionStorage.getItem("userName") || "admin"
-    roles.value = routerConfig.defaultRoles
+    try {
+        // 调用接口获取菜单
+        // TODO: userName 应该从登录信息中获取，这里暂时使用 sessionStorage 或默认值
+        const currentUserName = sessionStorage.getItem("userName")
+        const res: any = await userApi.getUserInfo({ userName: currentUserName })
+        console.log("menuList", res)
+        if (res && res.content) {
+            menuList.value = res.content
+        }
+    } catch (error) {
+        console.error("获取用户菜单失败", error)
+    }
   }
 
   // 模拟角色变化
@@ -81,7 +86,7 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  return { token, roles, username, setToken, getInfo, changeRoles, logout, resetToken }
+  return { token, roles, username, menuList, setToken, getInfo, changeRoles, logout, resetToken }
 })
 
 /**

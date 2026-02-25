@@ -1,6 +1,5 @@
 import type { App, Directive } from "vue"
-import { isArray } from "@@/utils/validate"
-import { useUserStore } from "@/pinia/stores/user"
+import { checkPermission } from "@@/utils/permission"
 
 /**
  * @name 权限指令
@@ -8,13 +7,12 @@ import { useUserStore } from "@/pinia/stores/user"
  */
 const permission: Directive = {
   mounted(el, binding) {
-    const { value: permissionRoles } = binding
-    const { roles } = useUserStore()
-    if (isArray(permissionRoles) && permissionRoles.length > 0) {
-      const hasPermission = roles.some(role => permissionRoles.includes(role))
+    const { value } = binding
+    if (value) {
+      const hasPermission = checkPermission(value)
       hasPermission || el.parentNode?.removeChild(el)
     } else {
-      throw new Error(`参数必须是一个数组且长度大于 0，参考：v-permission="['admin', 'editor']"`)
+      throw new Error(`需要提供权限标识！参考：v-permission="['admin', 'editor']" 或 v-permission="'fileUpload:upload'"`)
     }
   }
 }

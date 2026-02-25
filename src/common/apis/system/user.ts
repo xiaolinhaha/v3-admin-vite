@@ -152,5 +152,15 @@ export const userApi = {
       method: "get",
       baseURL: ""
     })
+  },
+
+  /** Get User Info (Menu Tree) */
+  getUserInfo: (params: { userName: string }) => {
+    return request({
+      url: "/iopApiAdmin/nebula/sys/user/info",
+      method: "get",
+      params,
+      baseURL: ""
+    })
   }
 }

@@ -143,6 +143,10 @@ function handleLogin() {
         localStorage.setItem("TOKEN", token)
         sessionStorage.setItem("userName", userName)
         sessionStorage.setItem("userInfo", userInfo)
+        
+        // 登录成功后，清除旧的角色和菜单信息，确保重新获取
+        userStore.roles = []
+        userStore.menuList = []
 
         const reset = res.content.userInfo.reset
         if (reset != "1") {

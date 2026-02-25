@@ -50,6 +50,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/",
     component: Layouts,
     redirect: "/dashboard",
+    name: "Layout",
     children: [
       {
         path: "dashboard",
@@ -83,7 +84,8 @@ export const constantRoutes: RouteRecordRaw[] = [
     meta: {
       title: "系统管理",
       elIcon: "Setting",
-      alwaysShow: true
+      alwaysShow: true,
+      hidden: true // 动态路由生效后，隐藏此静态配置，避免菜单重复或冲突
     },
     children: [
       {
@@ -134,125 +136,125 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
     ]
   },
-  {
-    path: "/demo",
-    component: Layouts,
-    redirect: "/demo/unocss",
-    name: "Demo",
-    meta: {
-      title: "示例集合",
-      elIcon: "DataBoard"
-    },
-    children: [
-      {
-        path: "unocss",
-        component: () => import("@/pages/demo/unocss/index.vue"),
-        name: "UnoCSS",
-        meta: {
-          title: "UnoCSS"
-        }
-      },
-      {
-        path: "element-plus",
-        component: () => import("@/pages/demo/element-plus/index.vue"),
-        name: "ElementPlus",
-        meta: {
-          title: "Element Plus",
-          keepAlive: true
-        }
-      },
-      {
-        path: "vxe-table",
-        component: () => import("@/pages/demo/vxe-table/index.vue"),
-        name: "VxeTable",
-        meta: {
-          title: "Vxe Table",
-          keepAlive: true
-        }
-      },
-      {
-        path: "level2",
-        component: () => import("@/pages/demo/level2/index.vue"),
-        redirect: "/demo/level2/level3",
-        name: "Level2",
-        meta: {
-          title: "二级路由",
-          alwaysShow: true
-        },
-        children: [
-          {
-            path: "level3",
-            component: () => import("@/pages/demo/level2/level3/index.vue"),
-            name: "Level3",
-            meta: {
-              title: "三级路由",
-              keepAlive: true
-            }
-          }
-        ]
-      },
-      {
-        path: "composable-demo",
-        redirect: "/demo/composable-demo/use-fetch-select",
-        name: "ComposableDemo",
-        meta: {
-          title: "组合式函数"
-        },
-        children: [
-          {
-            path: "use-fetch-select",
-            component: () => import("@/pages/demo/composable-demo/use-fetch-select.vue"),
-            name: "UseFetchSelect",
-            meta: {
-              title: "useFetchSelect"
-            }
-          },
-          {
-            path: "use-fullscreen-loading",
-            component: () => import("@/pages/demo/composable-demo/use-fullscreen-loading.vue"),
-            name: "UseFullscreenLoading",
-            meta: {
-              title: "useFullscreenLoading"
-            }
-          },
-          {
-            path: "use-watermark",
-            component: () => import("@/pages/demo/composable-demo/use-watermark.vue"),
-            name: "UseWatermark",
-            meta: {
-              title: "useWatermark"
-            }
-          }
-        ]
-      }
-    ]
-  },
+  // {
+  //   path: "/demo",
+  //   component: Layouts,
+  //   redirect: "/demo/unocss",
+  //   name: "Demo",
+  //   meta: {
+  //     title: "示例集合",
+  //     elIcon: "DataBoard"
+  //   },
+  //   children: [
+  //     {
+  //       path: "unocss",
+  //       component: () => import("@/pages/demo/unocss/index.vue"),
+  //       name: "UnoCSS",
+  //       meta: {
+  //         title: "UnoCSS"
+  //       }
+  //     },
+  //     {
+  //       path: "element-plus",
+  //       component: () => import("@/pages/demo/element-plus/index.vue"),
+  //       name: "ElementPlus",
+  //       meta: {
+  //         title: "Element Plus",
+  //         keepAlive: true
+  //       }
+  //     },
+  //     {
+  //       path: "vxe-table",
+  //       component: () => import("@/pages/demo/vxe-table/index.vue"),
+  //       name: "VxeTable",
+  //       meta: {
+  //         title: "Vxe Table",
+  //         keepAlive: true
+  //       }
+  //     },
+  //     {
+  //       path: "level2",
+  //       component: () => import("@/pages/demo/level2/index.vue"),
+  //       redirect: "/demo/level2/level3",
+  //       name: "Level2",
+  //       meta: {
+  //         title: "二级路由",
+  //         alwaysShow: true
+  //       },
+  //       children: [
+  //         {
+  //           path: "level3",
+  //           component: () => import("@/pages/demo/level2/level3/index.vue"),
+  //           name: "Level3",
+  //           meta: {
+  //             title: "三级路由",
+  //             keepAlive: true
+  //           }
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       path: "composable-demo",
+  //       redirect: "/demo/composable-demo/use-fetch-select",
+  //       name: "ComposableDemo",
+  //       meta: {
+  //         title: "组合式函数"
+  //       },
+  //       children: [
+  //         {
+  //           path: "use-fetch-select",
+  //           component: () => import("@/pages/demo/composable-demo/use-fetch-select.vue"),
+  //           name: "UseFetchSelect",
+  //           meta: {
+  //             title: "useFetchSelect"
+  //           }
+  //         },
+  //         {
+  //           path: "use-fullscreen-loading",
+  //           component: () => import("@/pages/demo/composable-demo/use-fullscreen-loading.vue"),
+  //           name: "UseFullscreenLoading",
+  //           meta: {
+  //             title: "useFullscreenLoading"
+  //           }
+  //         },
+  //         {
+  //           path: "use-watermark",
+  //           component: () => import("@/pages/demo/composable-demo/use-watermark.vue"),
+  //           name: "UseWatermark",
+  //           meta: {
+  //             title: "useWatermark"
+  //           }
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // },
 
-  {
-    path: "/link",
-    meta: {
-      title: "文档链接",
-      elIcon: "Link"
-    },
-    children: [
-      {
-        path: "https://juejin.cn/post/7445151895121543209",
-        component: () => {},
-        name: "Link1",
-        meta: {
-          title: "中文文档"
-        }
-      },
-      {
-        path: "https://juejin.cn/column/7207659644487139387",
-        component: () => {},
-        name: "Link2",
-        meta: {
-          title: "新手教程"
-        }
-      }
-    ]
-  }
+  // {
+  //   path: "/link",
+  //   meta: {
+  //     title: "文档链接",
+  //     elIcon: "Link"
+  //   },
+  //   children: [
+  //     {
+  //       path: "https://juejin.cn/post/7445151895121543209",
+  //       component: () => {},
+  //       name: "Link1",
+  //       meta: {
+  //         title: "中文文档"
+  //       }
+  //     },
+  //     {
+  //       path: "https://juejin.cn/column/7207659644487139387",
+  //       component: () => {},
+  //       name: "Link2",
+  //       meta: {
+  //         title: "新手教程"
+  //       }
+  //     }
+  //   ]
+  // }
 ]
 
 /**
@@ -261,6 +263,43 @@ export const constantRoutes: RouteRecordRaw[] = [
  * @description 必须带有唯一的 Name 属性
  */
 export const dynamicRoutes: RouteRecordRaw[] = [
+  {
+    path: "/sys",
+    component: Layouts,
+    redirect: "/sys/userList",
+    name: "Sys",
+    meta: {
+      title: "系统管理",
+      elIcon: "Setting",
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: "userList",
+        component: () => import("@/pages/system/user/index.vue"),
+        name: "UserList",
+        meta: {
+          title: "用户管理"
+        }
+      },
+      {
+        path: "menuList",
+        component: () => import("@/pages/system/menu/index.vue"),
+        name: "menuList",
+        meta: {
+          title: "菜单管理"
+        }
+      },
+      {
+        path: "roleList",
+        component: () => import("@/pages/system/role/index.vue"),
+        name: "RoleList",
+        meta: {
+          title: "角色管理"
+        }
+      }
+    ]
+  },
   {
     path: "/permission",
     component: Layouts,
