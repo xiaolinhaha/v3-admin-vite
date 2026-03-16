@@ -76,44 +76,6 @@ export const constantRoutes: RouteRecordRaw[] = [
       withToken: true
     }
   },
-  {
-    path: "/system",
-    component: Layouts,
-    redirect: "/system/user",
-    name: "System",
-    meta: {
-      title: "系统管理",
-      elIcon: "Setting",
-      alwaysShow: true,
-      hidden: true // 动态路由生效后，隐藏此静态配置，避免菜单重复或冲突
-    },
-    children: [
-      {
-        path: "user",
-        component: () => import("@/pages/system/user/index.vue"),
-        name: "UserManagement",
-        meta: {
-          title: "用户管理"
-        }
-      },
-      {
-        path: "menu",
-        component: () => import("@/pages/system/menu/index.vue"),
-        name: "MenuManagement",
-        meta: {
-          title: "菜单管理"
-        }
-      },
-      {
-        path: "role",
-        component: () => import("@/pages/system/role/index.vue"),
-        name: "RoleManagement",
-        meta: {
-          title: "角色管理"
-        }
-      }
-    ]
-  },
     {
     path: "/intelligent",
     component: Layouts,

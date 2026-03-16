@@ -56,10 +56,6 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true
         },
         "/iopApiAdmin/nebula": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.152.7.38:8762", // 位士
           target: "https://malla.leagpoint.com", // 测试环境
           changeOrigin: true,
           secure: false,
@@ -67,9 +63,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/iop": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.152.7.89:8762",  //龙建军
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -77,11 +70,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/ieport": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.6.22:8762",
-          // target: "http://localhost:8762",
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -89,10 +77,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/record": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.7.26:8762", // 测试
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -100,12 +84,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/rule": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.152.6.50:8762",  //kangkang
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.6.22:8762",
-          // target: "http://10.192.247.76:8762",
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -113,9 +91,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/api": {
-          // target: "http://10.152.5.143:8762",  //swagger 路劲替换免登录
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.6.65:8762",  //龙建军
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -123,10 +98,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/bot": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.192.247.76:8762",
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,
@@ -134,10 +105,6 @@ export default defineConfig(({ mode }) => {
           configure: proxyConfigure
         },
         "/iopApiAdmin/open": {
-          // target: "http://10.188.44.153:8762", // 测试
-          // target: "http://10.152.7.89:8762",  //龙建军
-          // target: "http://10.152.6.195:8762",  //成
-          // target: "http://10.192.247.76:8762",
           target: "https://malla.leagpoint.com", // 测试
           changeOrigin: true,
           secure: false,

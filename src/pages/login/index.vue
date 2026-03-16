@@ -8,7 +8,6 @@ import { useRoute, useRouter } from "vue-router"
 import { useSettingsStore } from "@/pinia/stores/settings"
 import { useUserStore } from "@/pinia/stores/user"
 import { getMessageCodeApi, getVerifyCodeApi, loginApi } from "@/common/apis/login"
-import Owl from "./components/Owl.vue"
 import { useFocus } from "./composables/useFocus"
 
 const route = useRoute()
@@ -58,13 +57,10 @@ function getVerCode() {
   loginFormData.code = ""
   codeUrl.value = ""
   getVerifyCodeApi().then((res) => {
-    if (res.success) {
+    if (res.success && res.content) {
       codeUrl.value = `data:image/jpeg;base64,${res.content}`
     } else {
       // 可能是错误消息，也可能是需要切换模式
-    }
-
-    if (res.msg === "internet" || res.content === "") {
       internetFlag.value = true
     }
   }).catch((err) => {

@@ -21,6 +21,19 @@ export function registerNavigationGuard(router: Router) {
     NProgress.start()
     const userStore = useUserStore()
     const permissionStore = usePermissionStore()
+
+    // 优先检查 URL 是否携带 token（针对新窗口打开的情况）
+    const queryToken = to.query.token as string
+    const querySeatId = to.query.seatId as string
+    
+    if (queryToken) {
+      console.log('Detected token in URL:', queryToken)
+      userStore.setToken(queryToken)
+      if (querySeatId) {
+        sessionStorage.setItem('userName', querySeatId)
+      }
+    }
+
     // 如果没有登录
     if (!getToken()) {
       // 如果在免登录的白名单中，则直接进入

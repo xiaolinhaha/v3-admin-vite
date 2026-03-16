@@ -1,6 +1,15 @@
 <script setup>
 
-const props = defineProps()
+const props = defineProps({
+  data: {
+    type: Array,
+    default: () => []
+  },
+  isPressUpOrDown: {
+    type: Boolean,
+    default: false
+  }
+})
 
 /** 选中的菜单 */
 const modelValue = defineModel({ required: true })
@@ -48,6 +57,7 @@ onBeforeMount(() => {
 
 // 在组件挂载时立即计算滚动可视区高度
 onMounted(() => {
+  console.log("onMounted", props.data)
   getScrollbarHeight()
 })
 

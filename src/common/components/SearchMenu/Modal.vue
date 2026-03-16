@@ -39,7 +39,9 @@ const menus = computed(() => cloneDeep(usePermissionStore().routes))
 const handleSearch = debounce(() => {
   const flatMenus = flatTree(menus.value)
   const _keywords = keyword.value.toLocaleLowerCase().trim()
-  result.value = flatMenus.filter(menu => keyword.value ? menu.meta?.title?.toLocaleLowerCase().includes(_keywords) : false)
+  const filteredMenus = flatMenus.filter(menu => keyword.value ? menu.meta?.title?.toLocaleLowerCase().includes(_keywords) : false)
+  console.log("filteredMenus",filteredMenus)
+  result.value = filteredMenus
   // 默认选中搜索结果的第一项
   const length = result.value?.length
   activeRouteName.value = length > 0 ? result.value[0].name : undefined
